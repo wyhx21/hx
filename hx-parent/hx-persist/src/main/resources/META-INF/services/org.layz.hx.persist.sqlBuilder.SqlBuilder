@@ -1,0 +1,9 @@
+org.layz.hx.persist.sqlBuilder.FindByIdSqlBuilder
+org.layz.hx.persist.sqlBuilder.FindAllSqlBuilder
+org.layz.hx.persist.sqlBuilder.FindByEntitySqlBuilder
+org.layz.hx.persist.sqlBuilder.CountByEntitySqlBuilder
+org.layz.hx.persist.sqlBuilder.PersistEntitySqlBuilder
+org.layz.hx.persist.sqlBuilder.DeletedByEntitySqlBuilder
+org.layz.hx.persist.sqlBuilder.DeleteByIdSqlBuilder
+org.layz.hx.persist.sqlBuilder.UpdateSqlBuilder
+org.layz.hx.persist.sqlBuilder.FindByIdsSqlBuilder

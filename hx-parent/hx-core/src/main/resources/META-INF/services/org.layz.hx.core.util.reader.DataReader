@@ -1,0 +1,5 @@
+org.layz.hx.core.util.reader.DefaultResultSetReader
+org.layz.hx.core.util.reader.DefaultListReader
+org.layz.hx.core.util.reader.DefaultArrayReader
+org.layz.hx.core.util.reader.DefaultMapReader
+org.layz.hx.core.util.reader.DefaultNullReader
