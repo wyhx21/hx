@@ -10,7 +10,7 @@ public interface FormatCacheSeter {
 	 * 格式化类型
 	 * @return
 	 */
-	String fromatType();
+	String formatType();
 	/**
 	 * 设置缓存
 	 * @param cacheMap

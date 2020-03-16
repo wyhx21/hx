@@ -31,7 +31,7 @@ public class CacheSetBuild {
 		}
     	Map<String, List<FieldColumnInfo>> collect = columnInfos.stream().collect(Collectors.groupingBy(FieldColumnInfo::getFormatType));
 		for(FormatCacheSeter seter : store) {
-			List<FieldColumnInfo> entryValue = collect.get(seter.fromatType());
+			List<FieldColumnInfo> entryValue = collect.get(seter.formatType());
 			if(null != entryValue && !entryValue.isEmpty()) {
 				seter.setCache(cacheMap, entryValue, list);
 			}
