@@ -36,7 +36,7 @@
 		<commons.lang3.version>3.9</commons.lang3.version>
 		<jackson.json.version>2.10.1</jackson.json.version>
 		<mysql.connection.version>8.0.18</mysql.connection.version>
-		<springframework.version>5.2.2.RELEASE</springframework.version>
+		<springframework.version>5.2.5.RELEASE</springframework.version>
 		<dubbo.version>2.7.5</dubbo.version>
 		<nacos.version>2.7.5</nacos.version>
 		<zookeeper.version>3.5.6</zookeeper.version>
