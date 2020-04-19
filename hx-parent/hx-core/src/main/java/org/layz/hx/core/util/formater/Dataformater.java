@@ -11,7 +11,17 @@ public interface Dataformater {
 	 * @return
 	 */
 	boolean support(String formatType);
-		
+	/**
+	 * 数据转换
+	 * @param instance
+	 * @param object
+	 * @param fieldInfo
+	 * @param cache
+	 * @return
+	 */
+	default Object format(Object instance,Object object,FieldColumnInfo fieldInfo, Map<Object, Object> cache) {
+		return format(object, fieldInfo, cache);
+	}	
 	/**
 	 * 数据转换
 	 * @param object
@@ -19,5 +29,7 @@ public interface Dataformater {
 	 * @param cache
 	 * @return
 	 */
-	Object format(Object object,FieldColumnInfo fieldInfo, Map<Object, Object> cache);
+	default Object format(Object object,FieldColumnInfo fieldInfo, Map<Object, Object> cache) {
+		return object;
+	}
 }

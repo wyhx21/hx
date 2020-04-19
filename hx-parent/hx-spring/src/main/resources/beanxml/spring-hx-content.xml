@@ -7,6 +7,7 @@
 	<import resource="classpath*:beanxml/spring-hx-core.xml"/>
 	<import resource="classpath*:beanxml/spring-hx-persist.xml"/>
 	<import resource="classpath*:beanxml/spring-hx-mvc.xml"/>
+	<import resource="classpath*:beanxml/spring-hx-kafka.xml"/>
 	<import resource="classpath*:beanxml/spring-*-dubbo.xml"/>
 	<import resource="classpath*:beanxml/spring-*-package.xml"/>
 </beans>

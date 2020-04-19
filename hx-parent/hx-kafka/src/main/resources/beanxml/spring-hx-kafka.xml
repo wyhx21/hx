@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+	
+	<bean id="producerProperties" class="java.util.HashMap">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${hx.kafka.producer.bootstrap.servers}" />
+                <entry key="retries" value="${hx.kafka.producer.retries}" />
+                <entry key="batch.size" value="${hx.kafka.producer.batch.size}" />
+                <entry key="linger.ms" value="${hx.kafka.producer.linger.ms}" />
+                <entry key="buffer.memory" value="${hx.kafka.producer.buffer.memory}" />
+                <!--<entry key="acks" value="${hx.kafka.producer.acks}" />-->
+                <entry key="key.serializer" value="${hx.kafka.producer.key.serializer}" />
+                <entry key="value.serializer" value="${hx.kafka.producer.value.serializer}" />
+            </map>
+        </constructor-arg>
+    </bean>
+
+    <bean id="produceFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
+        <constructor-arg ref="producerProperties"/>
+    </bean>
+
+    <bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
+        <constructor-arg name="producerFactory" ref="produceFactory"/>
+        <constructor-arg name="autoFlush" value="true"/>
+        <property name="defaultTopic" value="${hx.kafka.producer.default.topic}"/>
+    </bean>
+    
+    <bean id="cunsumerProperties" class="java.util.HashMap">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${hx.kafka.cunsumer.bootstrap.servers}" />
+                <entry key="group.id" value="${hx.kafka.cunsumer.group.id}" />
+                <entry key="enable.auto.commit" value="${hx.kafka.cunsumer.enable.auto.commit}" />
+                <entry key="auto.commit.interval.ms" value="${hx.kafka.cunsumer.auto.commit.interval.ms}" />
+                <entry key="session.timeout.ms" value="${hx.kafka.cunsumer.session.timeout.ms}" />
+                <entry key="key.deserializer" value="${hx.kafka.cunsumer.key.deserializer}" />
+                <entry key="value.deserializer" value="${hx.kafka.cunsumer.value.deserializer}" />
+            </map>
+        </constructor-arg>
+    </bean>
+    
+    <bean class="org.layz.hx.kakfa.config.HxKafkaConfog" init-method="init">
+        <property name="cunsumerProperTies" ref="cunsumerProperties"/>
+    </bean>
+</beans>

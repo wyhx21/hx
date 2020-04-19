@@ -14,6 +14,7 @@
 		<module>hx-base</module>
 		<module>hx-spring</module>
 		<module>hx-poi</module>
+		<module>hx-kafka</module>
 	</modules>
 
 	<properties>
@@ -37,11 +38,13 @@
 		<mysql.connection.version>8.0.18</mysql.connection.version>
 		<springframework.version>5.2.2.RELEASE</springframework.version>
 		<dubbo.version>2.7.5</dubbo.version>
+		<nacos.version>2.7.5</nacos.version>
 		<zookeeper.version>3.5.6</zookeeper.version>
 		<curator.version>4.2.0</curator.version>
 		<netty.version>4.1.44.Final</netty.version>
 		<poi.version>4.1.1</poi.version>
 		<fileupload.version>1.4</fileupload.version>
+		<spring.kafka.version>2.4.0.RELEASE</spring.kafka.version>
 	</properties>
 
 	<dependencyManagement>
@@ -212,9 +215,19 @@
 				<version>${poi.version}</version>
 			</dependency>
 			<dependency>
-			    <groupId>commons-fileupload</groupId>
-			    <artifactId>commons-fileupload</artifactId>
-			    <version>${fileupload.version}</version>
+				<groupId>commons-fileupload</groupId>
+				<artifactId>commons-fileupload</artifactId>
+				<version>${fileupload.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-registry-nacos</artifactId>
+				<version>${nacos.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.kafka</groupId>
+				<artifactId>spring-kafka</artifactId>
+				<version>${spring.kafka.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -233,27 +246,13 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
-			<!--配置生成Javadoc包-->
-			<!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.4</version>
-				<configuration>
-					<encoding>UTF-8</encoding>
-					<aggregate>true</aggregate>
-					<charset>UTF-8</charset>
-					<docencoding>UTF-8</docencoding>
-				</configuration>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin> -->
-			<!--配置生成源码包-->
+			<!--配置生成Javadoc包 -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+				<version>2.10.4</version> <configuration> <encoding>UTF-8</encoding> <aggregate>true</aggregate> 
+				<charset>UTF-8</charset> <docencoding>UTF-8</docencoding> </configuration> 
+				<executions> <execution> <id>attach-javadocs</id> <goals> <goal>jar</goal> 
+				</goals> </execution> </executions> </plugin> -->
+			<!--配置生成源码包 -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-source-plugin</artifactId>

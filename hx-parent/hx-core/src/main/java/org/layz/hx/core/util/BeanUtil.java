@@ -146,7 +146,7 @@ public class BeanUtil {
 		for (FieldColumnInfo fieldColumnInfo : fieldList) {
 			try {
 				Object value = dataReader.getObject(source, fieldColumnInfo);
-				value = fieldColumnInfo.getDataformater().format(value, fieldColumnInfo, cacheMap);
+				value = fieldColumnInfo.getDataformater().format(instance,value, fieldColumnInfo, cacheMap);
 				value = fieldColumnInfo.getDataConverter().dataConvert(value, cacheMap);
 				fieldColumnInfo.getMethodSet().invoke(instance, value);
 			} catch (Exception e) {
