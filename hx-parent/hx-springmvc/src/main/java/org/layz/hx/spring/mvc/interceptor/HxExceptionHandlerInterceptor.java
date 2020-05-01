@@ -7,10 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.ServiceLoader;
 
 
 public class HxExceptionHandlerInterceptor implements HandlerInterceptor{
@@ -18,6 +21,14 @@ public class HxExceptionHandlerInterceptor implements HandlerInterceptor{
 	private List<ExceptionHandler> exceptionHandlerList;
 	private ExceptionHandler defaultExceptionHandler;
 	
+	@PostConstruct
+	public void init() {
+		exceptionHandlerList = new ArrayList<ExceptionHandler>();
+		ServiceLoader<ExceptionHandler> load = ServiceLoader.load(ExceptionHandler.class);
+		for (ExceptionHandler exceptionHandler : load) {
+			exceptionHandlerList.add(exceptionHandler);
+		}
+	}
 	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
 		if(null == ex) {
 			return;
@@ -51,10 +62,6 @@ public class HxExceptionHandlerInterceptor implements HandlerInterceptor{
 		return null;
 	}
 
-	public void setExceptionHandlerList(List<ExceptionHandler> exceptionHandlerList) {
-		this.exceptionHandlerList = exceptionHandlerList;
-	}
-	
 	public void setDefaultExceptionHandler(ExceptionHandler defaultExceptionHandler) {
 		this.defaultExceptionHandler = defaultExceptionHandler;
 	}

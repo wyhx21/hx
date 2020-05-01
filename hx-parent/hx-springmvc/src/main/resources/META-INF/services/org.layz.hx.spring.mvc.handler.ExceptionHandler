@@ -1,0 +1,2 @@
+org.layz.hx.spring.mvc.handler.HxExceptionHandler
+org.layz.hx.spring.mvc.handler.RpcExceptionHandler
