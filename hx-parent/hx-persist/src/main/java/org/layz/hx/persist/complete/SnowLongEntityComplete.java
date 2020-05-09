@@ -13,6 +13,8 @@ public class SnowLongEntityComplete implements Complete {
     @Override
     public void complete(Object obj) {
         SnowLongBaseEntity entity = (SnowLongBaseEntity) obj;
-        entity.setId(SnowFlakeUtil.getSnowFlake().nextId());
+		if(null == entity.getId()) {
+			entity.setId(SnowFlakeUtil.getSnowFlake().nextId());
+		}
     }
 }
