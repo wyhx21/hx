@@ -1,6 +1,7 @@
 package org.layz.hx.persist.complete;
 
-import org.layz.hx.base.inte.Complete;
+
+import org.layz.hx.base.inte.entity.Complete;
 
 import java.util.ArrayList;
 import java.util.List;

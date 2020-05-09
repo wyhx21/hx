@@ -1,5 +1,6 @@
 package org.layz.hx.persist.sqlBuilder;
 
+import org.layz.hx.base.inte.entity.AutoKeyEntity;
 import org.layz.hx.core.pojo.info.FieldColumnInfo;
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
@@ -25,12 +26,13 @@ public class PersistEntitySqlBuilder extends AbstractSqlBuilder{
 		Object entity = param[0];
 		List<FieldColumnInfo> fieldList = tableClassInfo.getFieldList();
 		String id = tableClassInfo.getId();
+		boolean autoKey = AutoKeyEntity.class.isInstance(entity);
 		StringBuilder paramBuilder = new StringBuilder(" ( ");
 		List<Object> arges = new ArrayList<Object>();
 		boolean begin = true;
 		for (FieldColumnInfo fieldColumnInfo : fieldList) {
 			String columnName = fieldColumnInfo.getColumnName();
-			if(id.equals(columnName)) {
+			if(autoKey && id.equals(columnName)) {
 				continue;
 			}
 			try {

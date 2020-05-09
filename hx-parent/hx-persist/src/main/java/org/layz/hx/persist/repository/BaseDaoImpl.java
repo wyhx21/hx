@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 
 import org.layz.hx.base.entity.AutoLongBaseEntity;
 import org.layz.hx.base.exception.HxRuntimeException;
+import org.layz.hx.base.inte.entity.AutoKeyEntity;
 import org.layz.hx.base.pojo.Page;
 import org.layz.hx.base.pojo.Pageable;
 import org.layz.hx.persist.complete.CompleteFactory;
@@ -51,7 +52,9 @@ public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
 		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.PERSIST_ENTITY, t);
 		LOGGER.debug("sql: {}", sqlParam.getSql());
 		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
-		//return getJdbcTemplate().update(sqlParam.getSql(), sqlParam.getArgs());
+		if(!AutoKeyEntity.class.isInstance(t)) {
+			return getJdbcTemplate().update(sqlParam.getSql(), sqlParam.getArgs());
+		}
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		int update = getJdbcTemplate().update(new PreparedStatementCreator() {
 			@Override

@@ -1,7 +1,7 @@
 package org.layz.hx.persist.complete;
 
 import org.layz.hx.base.entity.DeletedEntity;
-import org.layz.hx.base.inte.Complete;
+import org.layz.hx.base.inte.entity.Complete;
 import org.layz.hx.base.type.DeletedEnum;
 
 public class DeletedEntityComplete implements Complete {

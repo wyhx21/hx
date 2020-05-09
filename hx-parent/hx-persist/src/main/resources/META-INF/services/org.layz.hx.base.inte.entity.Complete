@@ -1,0 +1,3 @@
+org.layz.hx.persist.complete.BaseEntityComplete
+org.layz.hx.persist.complete.DeletedEntityComplete
+org.layz.hx.persist.complete.SnowLongEntityComplete
