@@ -27,13 +27,7 @@ public class HxValidAspect {
             if(null == param) {
                 continue;
             }
-            if(param instanceof Iterable) {
-            	for(Object itemObject : (Iterable<?>)param) {
-            		ValidUtil.validParam(itemObject, valid);
-            	}
-            } else {
-            	ValidUtil.validParam(param,valid);
-            }
+            ValidUtil.validParam(param,valid);
         }
     }
 
