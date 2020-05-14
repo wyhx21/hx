@@ -17,7 +17,7 @@ public class NotNullValidator implements Validator {
     }
 
     @Override
-    public void validat(Object obj, Annotation annotation, FieldValidInfo fieldValidInfo) throws Throwable {
+    public void validate(Object obj, Annotation annotation, FieldValidInfo fieldValidInfo) throws Throwable {
         Object value = fieldValidInfo.getMethodGet().invoke(obj);
         Assert.isNotNull(value,((HxNotNull)annotation).value());
     }

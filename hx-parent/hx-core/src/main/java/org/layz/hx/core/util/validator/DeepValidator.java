@@ -1,15 +1,16 @@
 package org.layz.hx.core.util.validator;
 
-import org.layz.hx.base.annotation.valid.HxTrim;
+import org.layz.hx.base.annotation.valid.HxDeepValid;
 import org.layz.hx.base.info.FieldValidInfo;
 import org.layz.hx.base.inte.Validator;
+import org.layz.hx.core.util.ValidUtil;
 
 import java.lang.annotation.Annotation;
 
-public class TrimValidator implements Validator {
+public class DeepValidator implements Validator {
     @Override
     public boolean support(Annotation annotation) {
-        return annotation instanceof HxTrim;
+        return HxDeepValid.class.isInstance(annotation);
     }
 
     @Override
@@ -18,7 +19,6 @@ public class TrimValidator implements Validator {
         if(null == value) {
             return;
         }
-        String trim = value.toString().trim();
-        fieldValidInfo.getMethodSet().invoke(obj,trim);
+        ValidUtil.validParam(value);
     }
 }

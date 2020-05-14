@@ -1,3 +1,4 @@
 org.layz.hx.core.util.validator.NotNullValidator
 org.layz.hx.core.util.validator.NotBlankValidator
 org.layz.hx.core.util.validator.TrimValidator
+org.layz.hx.core.util.validator.DeepValidator
