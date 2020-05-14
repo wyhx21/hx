@@ -18,5 +18,5 @@ public interface Validator {
      * @param annotation
      * @param fieldValidInfo
      */
-    void validat(Object obj, Annotation annotation, FieldValidInfo fieldValidInfo) throws Throwable;
+    void validate(Object obj, Annotation annotation, FieldValidInfo fieldValidInfo) throws Throwable;
 }
