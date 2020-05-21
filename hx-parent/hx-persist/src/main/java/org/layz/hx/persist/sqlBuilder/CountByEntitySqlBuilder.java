@@ -2,9 +2,9 @@ package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
+import org.layz.hx.persist.util.SqlBuildUtil;
 
-public class CountByEntitySqlBuilder extends AbstractSqlBuilder{
+public class CountByEntitySqlBuilder implements SqlBuilder{
 
 	@Override
 	public String getType() {
@@ -12,9 +12,14 @@ public class CountByEntitySqlBuilder extends AbstractSqlBuilder{
 	}
 
 	@Override
-	public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
-		cacheSql = new StringBuilder("select count(0) total from ").append(tableClassInfo.getTableName());
-		return buildWhereSql(cacheSql, tableClassInfo, param);
+	public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
+		StringBuilder builder = new StringBuilder("select count(0) total from ").append(tableClassInfo.getTableName());
+		SqlBuildUtil.buildWhereSql(builder,tableClassInfo,param);
+		return builder.toString();
 	}
 
+	@Override
+	public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+		return SqlBuildUtil.buildWhereArgs(tableClassInfo,param);
+	}
 }

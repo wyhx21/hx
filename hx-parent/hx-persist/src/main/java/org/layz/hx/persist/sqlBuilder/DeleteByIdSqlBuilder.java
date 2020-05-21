@@ -2,9 +2,8 @@ package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
 
-public class DeleteByIdSqlBuilder extends AbstractSqlBuilder{
+public class DeleteByIdSqlBuilder implements SqlBuilder {
 
 	@Override
 	public String getType() {
@@ -12,19 +11,16 @@ public class DeleteByIdSqlBuilder extends AbstractSqlBuilder{
 	}
 
 	@Override
-	public StringBuilder buildCacheSql(TableClassInfo tableClassInfo, Object[] param) {
+	public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
 		return new StringBuilder("delete from ")
 				.append(tableClassInfo.getTableName())
 				.append(" where ")
 				.append(tableClassInfo.getId())
-				.append(" = ? ;");
+				.append(" = ? ;").toString();
 	}
 
 	@Override
-	public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
-		SqlParam sqlParam = new SqlParam();
-		sqlParam.setSql(cacheSql.toString());
-		return sqlParam;
+	public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+		return param;
 	}
-
 }

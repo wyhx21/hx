@@ -23,6 +23,13 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
 
     @Override
     @Transactional
+    public void persistBatch(List<T> list) {
+        LOGGER.debug("persistBatch");
+        getBaseDao().persistBatch(list);
+    }
+
+    @Override
+    @Transactional
     public Integer deleteByEntity(T t) {
         LOGGER.debug(">>> deleteByEntity <<<");
         return getBaseDao().deleteByEntity(t);
@@ -36,10 +43,9 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     }
 
     @Override
-    @Transactional
-    public Integer updateNotnull(T t) {
-        LOGGER.debug(">>> updateNotnull <<<");
-        return getBaseDao().updateNotnull(t);
+    public void updateBatch(List<T> list) {
+        LOGGER.debug("updateBatch");
+        getBaseDao().updateBatch(list);
     }
 
     @Override
@@ -77,6 +83,12 @@ public abstract class BaseServiceImpl<T> implements BaseService<T> {
     public Page<T> findPage(T t, Pageable pageable) {
         LOGGER.debug(">>> findPage <<<");
         return getBaseDao().findPage(t,pageable);
+    }
+
+    @Override
+    public Long findCountByEntity(T t) {
+        LOGGER.debug("findCountByEntity");
+        return getBaseDao().findCountByEntity(t);
     }
 
     @Override

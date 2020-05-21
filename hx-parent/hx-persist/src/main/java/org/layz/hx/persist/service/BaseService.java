@@ -12,6 +12,10 @@ public interface BaseService<T>{
      */
     Integer persistEntity(T t);
     /**
+     * @param list
+     */
+    void persistBatch(List<T> list);
+    /**
      *
      * @param t
      * @return
@@ -23,12 +27,12 @@ public interface BaseService<T>{
      * @return
      */
     Integer update(T t);
+
     /**
-     * _更新非空字段
-     * @param t
-     * @return
+     * @param list
      */
-    Integer updateNotnull(T t);
+    void updateBatch(List<T> list);
+
     /**
      *
      * @param id
@@ -68,6 +72,11 @@ public interface BaseService<T>{
      */
     Page<T> findPage(T t, Pageable pageable);
 
+    /**
+     * @param t
+     * @return
+     */
+    Long findCountByEntity(T t);
     /**
      * @return
      */

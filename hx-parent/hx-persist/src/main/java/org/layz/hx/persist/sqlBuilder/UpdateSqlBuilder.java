@@ -1,17 +1,16 @@
 package org.layz.hx.persist.sqlBuilder;
 
+import org.layz.hx.core.pojo.info.FieldColumnInfo;
+import org.layz.hx.core.pojo.info.TableClassInfo;
+import org.layz.hx.persist.inte.Const;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.layz.hx.core.pojo.info.FieldColumnInfo;
-import org.layz.hx.core.pojo.info.TableClassInfo;
-import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class UpdateSqlBuilder extends AbstractSqlBuilder{
+public class UpdateSqlBuilder implements SqlBuilder{
 	private static final Logger LOGGER = LoggerFactory.getLogger(UpdateSqlBuilder.class);
 
 	@Override
@@ -20,15 +19,35 @@ public class UpdateSqlBuilder extends AbstractSqlBuilder{
 	}
 
 	@Override
-	public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
-		Object entity = param[0];
-		Boolean notnull = (Boolean) param[1];
-		List<FieldColumnInfo> fieldList = tableClassInfo.getFieldList();
+	public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
 		Boolean isBegin = true;
+		StringBuilder sqlBuilder = new StringBuilder("update ").append(tableClassInfo.getTableName());
+		List<FieldColumnInfo> fieldList = tableClassInfo.getFieldList();
+		for (FieldColumnInfo fieldColumnInfo : fieldList) {
+			try {
+				if(tableClassInfo.getId().contentEquals(fieldColumnInfo.getColumnName())) {
+					continue;
+				}
+				if(isBegin) {
+					sqlBuilder.append(" set ").append(fieldColumnInfo.getColumnName()).append(" = ?");
+					isBegin = false;
+				} else {
+					sqlBuilder.append(", ").append(fieldColumnInfo.getColumnName()).append(" = ?");
+				}
+			} catch (Exception e) {
+				LOGGER.error("methodGet: {}", fieldColumnInfo.getMethodGet().getName());
+			}
+		}
+		sqlBuilder.append(" where ").append(tableClassInfo.getId()).append(" = ?;");
+		return sqlBuilder.toString();
+	}
+
+	@Override
+	public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+		Object entity = param[0];
+		List<FieldColumnInfo> fieldList = tableClassInfo.getFieldList();
 		List<Object> args = new ArrayList<Object>();
 		Object id = null;
-		
-		cacheSql = new StringBuilder("update ").append(tableClassInfo.getTableName());
 		for (FieldColumnInfo fieldColumnInfo : fieldList) {
 			Method methodGet = fieldColumnInfo.getMethodGet();
 			try {
@@ -37,32 +56,12 @@ public class UpdateSqlBuilder extends AbstractSqlBuilder{
 					id = value;
 					continue;
 				}
-				if(notnull) {
-					if(null == value) {
-						continue;
-					}
-					if(String.class == fieldColumnInfo.getFieldType() && value.toString().length() < 1) {
-						continue;
-					}
-				}
-				if(isBegin) {
-					cacheSql.append(" set ").append(fieldColumnInfo.getColumnName()).append(" = ?");
-					isBegin = false;
-				} else {
-					cacheSql.append(", ").append(fieldColumnInfo.getColumnName()).append(" = ?");
-				}
 				args.add(value);
 			} catch (Exception e) {
 				LOGGER.error("methodGet: {}", methodGet.getName());
 			}
 		}
 		args.add(id);
-		cacheSql.append(" where ").append(tableClassInfo.getId()).append(" = ?;");
-		
-		SqlParam sqlParam = new SqlParam();
-		sqlParam.setArgs(args.toArray());
-		sqlParam.setSql(cacheSql.toString());
-		return sqlParam;
+		return args.toArray();
 	}
-
 }

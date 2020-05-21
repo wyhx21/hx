@@ -2,12 +2,9 @@ package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.layz.hx.persist.util.SqlBuildUtil;
 
-public class FindByEntitySqlBuilder extends AbstractSqlBuilder{
-	private static final Logger LOGGER = LoggerFactory.getLogger(FindByEntitySqlBuilder.class);
+public class FindByEntitySqlBuilder implements SqlBuilder{
 
 	@Override
 	public String getType() {
@@ -15,15 +12,14 @@ public class FindByEntitySqlBuilder extends AbstractSqlBuilder{
 	}
 
 	@Override
-	public StringBuilder buildCacheSql(TableClassInfo tableClassInfo, Object[] param) {
-		LOGGER.debug("buildCacheSql,class: {}", tableClassInfo.getClazz());
-		StringBuilder stringBuilder = builderSelect(tableClassInfo);
-		return stringBuilder;
+	public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
+		StringBuilder builder = SqlBuildUtil.builderSelect(tableClassInfo);
+		SqlBuildUtil.buildWhereSql(builder,tableClassInfo,param);
+		return builder.toString();
 	}
 
 	@Override
-	public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
-		return buildWhereSql(cacheSql, tableClassInfo, param);
+	public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+		return SqlBuildUtil.buildWhereArgs(tableClassInfo,param);
 	}
-
 }

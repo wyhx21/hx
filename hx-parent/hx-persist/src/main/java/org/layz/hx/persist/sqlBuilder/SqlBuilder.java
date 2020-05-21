@@ -1,23 +1,42 @@
 package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
-import org.layz.hx.persist.pojo.SqlParam;
 
 public interface SqlBuilder {
+	/**
+	 * @return
+	 */
 	String getType();
 	/**
-	 * sql构建
 	 * @param tableClassInfo
 	 * @param param
 	 * @return
 	 */
-	StringBuilder buildCacheSql(TableClassInfo tableClassInfo, Object[] param);
+	default String buildSql(TableClassInfo tableClassInfo, Object... param) {
+		return this.buildSql(param,tableClassInfo);
+	}
 	/**
-	 * sql构建
-	 * @param cacheSql
 	 * @param tableClassInfo
 	 * @param param
 	 * @return
 	 */
-	SqlParam buildSql(StringBuilder cacheSql,TableClassInfo tableClassInfo, Object[] param);
+	default Object[] buildArgs(TableClassInfo tableClassInfo, Object... param) {
+		return this.buildArgs(param,tableClassInfo);
+	}
+	/**
+	 * @param param
+	 * @param tableClassInfo
+	 * @return
+	 */
+	default String buildSql(Object[] param, TableClassInfo tableClassInfo) {
+		return null;
+	}
+	/**
+	 * @param tableClassInfo
+	 * @param param
+	 * @return
+	 */
+	default Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+		return new Object[0];
+	}
 }

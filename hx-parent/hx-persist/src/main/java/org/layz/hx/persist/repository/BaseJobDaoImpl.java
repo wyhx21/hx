@@ -16,7 +16,7 @@ public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> impl
     public int findCountByName(String scanTypeName, Date currentDate) {
         LOGGER.debug("scanTypeName:{}", scanTypeName);
         String sql = "select count(0) from " + tableName + " where scanTypeName = ? and (`status` = ? or (`status` = ? and failCount < ?)) and beginRunTime <= ?";
-        int count = getJdbcTemplate().queryForObject(sql, Integer.class, scanTypeName, JobStatusEnum.WAITE_HANDLE.getValue(),
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, scanTypeName, JobStatusEnum.WAITE_HANDLE.getValue(),
                 JobStatusEnum.HANDLE_FAIL.getValue(), failCount,currentDate);
         return count;
     }
@@ -25,7 +25,7 @@ public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> impl
     public int updateProcessNo(String processNo, String scanTypeName, Integer taskLoopCount, Date currentDate) {
         LOGGER.debug("scanTypeName: {},taskLoopCount: {},processNo: {}", scanTypeName, taskLoopCount, processNo);
         String sql = "update " + tableName + " set processNo = ?,`status` = ?,lastModifiedDate = ? where scanTypeName = ? and (`status` = ? or (`status` = ? and failCount < ?)) and beginRunTime <= ? LIMIT ?";
-        return getJdbcTemplate().update(sql, processNo, JobStatusEnum.HANDING.getValue(), currentDate, scanTypeName, JobStatusEnum.WAITE_HANDLE.getValue(),
+        return jdbcTemplate.update(sql, processNo, JobStatusEnum.HANDING.getValue(), currentDate, scanTypeName, JobStatusEnum.WAITE_HANDLE.getValue(),
                 JobStatusEnum.HANDLE_FAIL.getValue(), failCount, currentDate, taskLoopCount);
     }
 
@@ -33,7 +33,7 @@ public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> impl
     public int updateNextJob(Long parentJobId) {
         LOGGER.debug("parentJobId: {}", parentJobId);
         String sql = "update " + tableName + " set `status` = ?,lastModifiedDate = ? where parentJobId = ? and `status` = ?";
-        return getJdbcTemplate().update(sql, JobStatusEnum.WAITE_START.getValue(), new Date(), parentJobId,JobStatusEnum.WAITE_HANDLE.getValue());
+        return jdbcTemplate.update(sql, JobStatusEnum.WAITE_START.getValue(), new Date(), parentJobId,JobStatusEnum.WAITE_HANDLE.getValue());
     }
 
     public void setTableName(String tableName) {

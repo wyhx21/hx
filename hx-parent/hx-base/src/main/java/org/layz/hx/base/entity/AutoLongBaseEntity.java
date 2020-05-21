@@ -3,10 +3,9 @@ package org.layz.hx.base.entity;
 import org.layz.hx.base.annotation.HxColumn;
 import org.layz.hx.base.annotation.HxSupperClass;
 import org.layz.hx.base.inte.entity.AutoKeyEntity;
-import org.layz.hx.base.inte.entity.LongIdEntity;
 
 @HxSupperClass
-public class AutoLongBaseEntity extends DeletedEntity implements LongIdEntity, AutoKeyEntity {
+public class AutoLongBaseEntity extends DeletedEntity implements AutoKeyEntity {
 
 	/**
 	 * 

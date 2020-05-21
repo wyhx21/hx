@@ -2,12 +2,9 @@ package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.layz.hx.persist.util.SqlBuildUtil;
 
-public class FindByIdSqlBuilder extends AbstractSqlBuilder{
-	private static final Logger LOGGER = LoggerFactory.getLogger(FindByIdSqlBuilder.class);
+public class FindByIdSqlBuilder implements SqlBuilder{
 
 	@Override
 	public String getType() {
@@ -15,20 +12,15 @@ public class FindByIdSqlBuilder extends AbstractSqlBuilder{
 	}
 
 	@Override
-	public StringBuilder buildCacheSql(TableClassInfo tableClassInfo, Object[] param) {
-		LOGGER.info("buildCacheSql,class: {}", tableClassInfo.getClazz());
-		StringBuilder stringBuilder = builderSelect(tableClassInfo);
-		return stringBuilder.append(" where ")
-			.append(tableClassInfo.getId())
-			.append(" = ?");
+	public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
+		StringBuilder sql = SqlBuildUtil.builderSelect(tableClassInfo)
+				.append(" where ").append(tableClassInfo.getId()).append(" = ?;");
+		return sql.toString();
 	}
 
 	@Override
-	public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
-		SqlParam sqlParam = new SqlParam();
-		sqlParam.setSql(cacheSql.toString());
-		sqlParam.setArgs(param);
-		return sqlParam;
+	public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+		return param;
 	}
 
 }

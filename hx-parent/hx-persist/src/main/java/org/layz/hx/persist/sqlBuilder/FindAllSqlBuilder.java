@@ -2,9 +2,9 @@ package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
+import org.layz.hx.persist.util.SqlBuildUtil;
 
-public class FindAllSqlBuilder extends AbstractSqlBuilder {
+public class FindAllSqlBuilder implements SqlBuilder {
 
     @Override
     public String getType() {
@@ -12,14 +12,12 @@ public class FindAllSqlBuilder extends AbstractSqlBuilder {
     }
 
     @Override
-    public StringBuilder buildCacheSql(TableClassInfo tableClassInfo, Object[] param) {
-        return builderSelect(tableClassInfo);
+    public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
+        return SqlBuildUtil.builderSelect(tableClassInfo).toString();
     }
 
     @Override
-    public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
-        SqlParam sqlParam = new SqlParam();
-        sqlParam.setSql(cacheSql.toString());
-        return sqlParam;
+    public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
+        return new Object[0];
     }
 }

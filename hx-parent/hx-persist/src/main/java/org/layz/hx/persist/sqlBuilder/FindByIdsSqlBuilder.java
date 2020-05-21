@@ -2,43 +2,35 @@ package org.layz.hx.persist.sqlBuilder;
 
 import org.layz.hx.core.pojo.info.TableClassInfo;
 import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.layz.hx.persist.util.SqlBuildUtil;
 
 import java.util.List;
 
-public class FindByIdsSqlBuilder extends AbstractSqlBuilder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FindByIdsSqlBuilder.class);
-
+public class FindByIdsSqlBuilder implements SqlBuilder {
     @Override
     public String getType() {
         return Const.FIND_BY_IDS;
     }
 
     @Override
-    public StringBuilder buildCacheSql(TableClassInfo tableClassInfo, Object[] param) {
-        LOGGER.info("buildCacheSql,class: {}", tableClassInfo.getClazz());
-        StringBuilder stringBuilder = builderSelect(tableClassInfo);
-        return stringBuilder.append(" where ")
-                .append(tableClassInfo.getId())
-                .append(" in(");
+    public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
+        StringBuilder sql = SqlBuildUtil.builderSelect(tableClassInfo)
+                .append(" where ").append(tableClassInfo.getId()).append(" in (");
+        List<Long> ids = (List<Long>) param[0];
+        for(int i = 0; i < ids.size(); i++) {
+            if(i == 0) {
+                sql.append(" ? ");
+            } else {
+                sql.append(",? ");
+            }
+        }
+        sql.append(" );");
+        return sql.toString();
     }
 
     @Override
-    public SqlParam buildSql(StringBuilder cacheSql, TableClassInfo tableClassInfo, Object[] param) {
+    public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
         List<Long> ids = (List<Long>) param[0];
-        StringBuilder whereSql = new StringBuilder();
-        for (Long id : ids) {
-            whereSql.append(",?");
-        }
-        StringBuilder sql = new StringBuilder(cacheSql)
-                .append(whereSql.substring(1))
-                .append(");");
-
-        SqlParam sqlParam = new SqlParam();
-        sqlParam.setSql(sql.toString());
-        sqlParam.setArgs(ids.toArray());
-        return sqlParam;
+        return ids.toArray();
     }
 }

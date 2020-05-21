@@ -11,6 +11,12 @@ public interface BaseDao<T> {
 	 * @return
 	 */
 	Integer persistEntity(T t);
+
+	/**
+	 * @param list
+	 */
+	void persistBatch(List<T> list);
+
 	/**
 	 * 
 	 * @param t
@@ -23,18 +29,18 @@ public interface BaseDao<T> {
 	 * @return
 	 */
 	Integer deleteById(Long id);
-	/**
+
+    /**
 	 * _更新所有字段
 	 * @param t
 	 * @return
 	 */
 	Integer update(T t);
+
 	/**
-	 * _更新非空字段
-	 * @param t
-	 * @return
+	 * @param list
 	 */
-	Integer updateNotnull(T t);
+	void updateBatch(List<T> list);
 	/**
 	 * _根据id查询
 	 * @param id
@@ -69,6 +75,12 @@ public interface BaseDao<T> {
 	Page<T> findPage(T t, Pageable pageable);
 
 	/**
+	 * @param t
+	 * @return
+	 */
+    Long findCountByEntity(T t);
+
+    /**
 	 * @return
 	 */
     List<T> findAll();

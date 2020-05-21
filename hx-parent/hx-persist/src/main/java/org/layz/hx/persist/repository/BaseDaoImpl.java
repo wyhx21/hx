@@ -1,71 +1,79 @@
 package org.layz.hx.persist.repository;
 
+import org.layz.hx.base.entity.AutoLongBaseEntity;
+import org.layz.hx.base.inte.entity.AutoKeyEntity;
+import org.layz.hx.base.pojo.Page;
+import org.layz.hx.base.pojo.Pageable;
+import org.layz.hx.base.util.Assert;
+import org.layz.hx.core.pojo.info.TableClassInfo;
+import org.layz.hx.core.support.HxTableSupport;
+import org.layz.hx.persist.complete.CompleteFactory;
+import org.layz.hx.persist.factory.RowMapperFactory;
+import org.layz.hx.persist.factory.SqlBuildFactory;
+import org.layz.hx.persist.inte.Const;
+import org.layz.hx.persist.sqlBuilder.SqlBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.PostConstruct;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
-
-import org.layz.hx.base.entity.AutoLongBaseEntity;
-import org.layz.hx.base.exception.HxRuntimeException;
-import org.layz.hx.base.inte.entity.AutoKeyEntity;
-import org.layz.hx.base.pojo.Page;
-import org.layz.hx.base.pojo.Pageable;
-import org.layz.hx.persist.complete.CompleteFactory;
-import org.layz.hx.persist.factory.RowMapperFactory;
-import org.layz.hx.persist.factory.SqlBuildFactory;
-import org.layz.hx.persist.inte.Const;
-import org.layz.hx.persist.pojo.SqlParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
-
-public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
+public class BaseDaoImpl<T> implements BaseDao<T> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(BaseDaoImpl.class);
 	protected Class<T> clazz;
+	private TableClassInfo tableClassInfo;
+	@Value("${hx.persist.batch.size:200}")
+	private int batchSize;
 	@Autowired
-	private DataSource dataSource;
+	protected JdbcTemplate jdbcTemplate;
+
 	@PostConstruct
-	public void initDao() {
-		super.setDataSource(dataSource);
+	public void init() {
+		initDao();
 	}
+
+	protected void initDao() {
+		// 获取泛型
+		Type type = getParameterizedType(getClass());
+		Assert.isNotNull(type,"class resolve error");
+		Type[] typeArr = ((ParameterizedType) type).getActualTypeArguments();
+		setClazz((Class<T>) typeArr[0]);
+	}
+
 	@Override
 	public Integer persistEntity(T t) {
 		if(null == t) {
 			throw new NullPointerException();
 		}
 		CompleteFactory.complete(t);
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.PERSIST_ENTITY, t);
-		LOGGER.debug("sql: {}", sqlParam.getSql());
-		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.PERSIST_ENTITY);
+		final String sql = builder.buildSql(tableClassInfo, t);
+		final Object[] args = builder.buildArgs(tableClassInfo, t);
 		if(!AutoKeyEntity.class.isInstance(t)) {
-			return getJdbcTemplate().update(sqlParam.getSql(), sqlParam.getArgs());
+			return jdbcTemplate.update(sql, args);
 		}
 		KeyHolder keyHolder = new GeneratedKeyHolder();
-		int update = getJdbcTemplate().update(new PreparedStatementCreator() {
-			@Override
-			public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-				PreparedStatement ps = con.prepareStatement(sqlParam.getSql(), new String[]{sqlParam.getIdStr()});
-				Object[] paramArgs = sqlParam.getArgs();
-				for (int i = 0; i < paramArgs.length; i++) {
-					ps.setObject(i + 1, paramArgs[i]);
-				}
-				return ps;
+		int update = jdbcTemplate.update((con) ->{
+			PreparedStatement ps = con.prepareStatement(sql, new String[]{tableClassInfo.getId()});
+			for (int i = 0; i < args.length; i++) {
+				ps.setObject(i + 1, args[i]);
 			}
+			return ps;
 		}, keyHolder);
 		long id = keyHolder.getKey().longValue();
 		if(t instanceof AutoLongBaseEntity) {
@@ -75,50 +83,73 @@ public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
 	}
 
 	@Override
+	public void persistBatch(List<T> list){
+		if(CollectionUtils.isEmpty(list)) {
+			return;
+		}
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.PERSIST_ENTITY);
+		final String sql = builder.buildSql(tableClassInfo, list.get(0));
+		this.jdbcTemplate.batchUpdate(sql, list, batchSize, (ps, argument) -> {
+			CompleteFactory.complete(argument);
+			final Object[] args = builder.buildArgs(tableClassInfo, argument);
+			for (int i = 0; i < args.length; i++) {
+				ps.setObject(i + 1, args[i]);
+			}
+		});
+	}
+
+	@Override
 	public Integer update(T t) {
 		if(null == t) {
 			throw new NullPointerException();
 		}
-		setBaseUpdateEntoty(t);
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.UPDATE, t ,false);
-		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
-		return getJdbcTemplate().update(sqlParam.getSql(), sqlParam.getArgs());
+		setBaseUpdateEntity(t);
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.UPDATE);
+		final String sql = builder.buildSql(tableClassInfo);
+		final Object[] args = builder.buildArgs(tableClassInfo, t);
+		return jdbcTemplate.update(sql, args);
 	}
-	
+
 	@Override
-	public Integer updateNotnull(T t) {
-		if(null == t) {
-			throw new NullPointerException();
+	public void updateBatch(List<T> list){
+		if(CollectionUtils.isEmpty(list)) {
+			return;
 		}
-		setBaseUpdateEntoty(t);
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.UPDATE, t, true);
-		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
-		return getJdbcTemplate().update(sqlParam.getSql(), sqlParam.getArgs());
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.UPDATE);
+		final String sql = builder.buildSql(tableClassInfo);
+		this.jdbcTemplate.batchUpdate(sql, list, batchSize, (ps, argument) -> {
+			setBaseUpdateEntity(argument);
+			final Object[] args = builder.buildArgs(tableClassInfo, argument);
+			for (int i = 0; i < args.length; i++) {
+				ps.setObject(i + 1, args[i]);
+			}
+		});
 	}
 
 	@Override
 	public Integer deleteByEntity(T t) {
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.DELETE_BY_ENTITY, t, null);
-		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
-		return getJdbcTemplate().update(sqlParam.getSql(), sqlParam.getArgs());
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.DELETE_BY_ENTITY);
+		final String sql = builder.buildSql(tableClassInfo, t);
+		final Object[] args = builder.buildArgs(tableClassInfo, t);
+		return jdbcTemplate.update(sql, args);
 	}
 	
 	@Override
 	public Integer deleteById(Long id) {
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.DELETE_BY_ID, id);
-		LOGGER.debug("parmeter args: {}", id);
-		return getJdbcTemplate().update(sqlParam.getSql(), id);
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.DELETE_BY_ID);
+		final String sql = builder.buildSql(tableClassInfo);
+		LOGGER.debug("hx persist args ==> {}", id);
+		return jdbcTemplate.update(sql, id);
 	}
 	
 	public T findById(Long id) {
 		try {
-			if(null == id) {
-				throw new HxRuntimeException("请选择一条记录");
-			}
-			SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.FIND_BY_ID, id);
+			Assert.isNotNull(id,"please select record!");
+			SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.FIND_BY_ID);
+			final String sql = builder.buildSql(tableClassInfo);
+			LOGGER.debug("hx persist args ==> {}", id);
 			RowMapper<T> rowMapper = RowMapperFactory.getRowMapper(clazz);
-			LOGGER.debug("parmeter args: {}", sqlParam.getArgs());
-			T t = getJdbcTemplate().queryForObject(sqlParam.getSql(), sqlParam.getArgs() , rowMapper);
+			T t = jdbcTemplate.queryForObject(sql, rowMapper, id);
 			return t;
 		} catch (EmptyResultDataAccessException e) {
 			LOGGER.debug("result is empty");
@@ -131,32 +162,29 @@ public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
 		if(null == ids || ids.isEmpty()) {
 			return Collections.emptyList();
 		}
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.FIND_BY_IDS, ids);
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.FIND_BY_IDS);
+		final String sql = builder.buildSql(tableClassInfo, ids);
+		final Object[] args = builder.buildArgs(tableClassInfo, ids);
+
 		RowMapper<T> rowMapper = RowMapperFactory.getRowMapper(clazz);
-		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
-		List<T> list = getJdbcTemplate().query(sqlParam.getSql(), sqlParam.getArgs(), rowMapper);
+		List<T> list = jdbcTemplate.query(sql, args, rowMapper);
 		return list;
 	}
 
 	@Override
 	public List<T> findByEntity(T t) {
-		return findByEntity(t, null);
+		return findListByEntity(t, null);
 	}
 	
 	@Override
 	public List<T> findByEntity(T t, String orderBy) {
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.FIND_BY_ENTITY, t, new Pageable(orderBy));
-		RowMapper<T> rowMapper = RowMapperFactory.getRowMapper(clazz);
-		LOGGER.debug("parmeter args: {}", Arrays.toString(sqlParam.getArgs()));
-		List<T> list = getJdbcTemplate().query(sqlParam.getSql(),  sqlParam.getArgs(), rowMapper);
-		return list;
+		return findListByEntity(t,new Pageable(orderBy));
 	}
 	
 	@SuppressWarnings("unchecked")
 	public Page<T> findPage(T t, Pageable pageable){
 		pageable = resetPageable(pageable);
-		SqlParam sqlParam = SqlBuildFactory.buildSql(clazz, Const.COUNT_BY_ENTITY, t, null);
-		Long total = getJdbcTemplate().queryForObject(sqlParam.getSql(), sqlParam.getArgs(),Long.class);
+		Long total = findCountByEntity(t);
 		
 		Page<T> pageResult = new Page<T>();
 		pageResult.setTotal(total);
@@ -166,43 +194,33 @@ public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
 		if(total <= pageable.getOffset()) {
 			pageResult.setData(Collections.EMPTY_LIST);
 		} else {
-			SqlParam dataSqlParam = SqlBuildFactory.buildSql(clazz, Const.FIND_BY_ENTITY, t, pageable);
-			LOGGER.debug("parmeter args: {}", Arrays.toString(dataSqlParam.getArgs()));
-			RowMapper<T> rowMapper = RowMapperFactory.getRowMapper(clazz);
-			List<T> list = getJdbcTemplate().query(dataSqlParam.getSql(),  dataSqlParam.getArgs(), rowMapper);
+			List<T> list = findListByEntity(t,pageable);
 			pageResult.setData(list);
 		}
 		return pageResult;
 	}
+	@Override
+	public Long findCountByEntity(T t){
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.COUNT_BY_ENTITY);
+		final String sql = builder.buildSql(tableClassInfo, t);
+		final Object[] args = builder.buildArgs(tableClassInfo, t);
+		Long count = jdbcTemplate.queryForObject(sql, args, Long.class);
+		return count;
+	}
 
     @Override
     public List<T> findAll() {
-		LOGGER.debug(">>> findAll <<<");
-		SqlParam dataSqlParam = SqlBuildFactory.buildSql(clazz, Const.FIND_ALL);
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.FIND_ALL);
+		final String sql = builder.buildSql(tableClassInfo);
 		RowMapper<T> rowMapper = RowMapperFactory.getRowMapper(clazz);
-        return getJdbcTemplate().query(dataSqlParam.getSql(), rowMapper);
+        return jdbcTemplate.query(sql, rowMapper);
     }
 
-    public<Entity> RowMapper<Entity> getRowMapper(Class<Entity> clazz){
-		return RowMapperFactory.getRowMapper(clazz);
+	public void setClazz(Class<T> clazz){
+		this.clazz = clazz;
+		tableClassInfo = HxTableSupport.getTableClassInfo(clazz);
 	}
 
-	public RowMapper<T> getRowMapper(){
-		return RowMapperFactory.getRowMapper(clazz);
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void initTemplateConfig() {
-		// 获取泛型
-		Type type = getParameterizedType(getClass());
-		if(null != type) {
-			Type[] typeArr = ((ParameterizedType) type).getActualTypeArguments();
-			clazz = (Class<T>) typeArr[0];
-		} else {
-			throw new HxRuntimeException("类型解析异常");
-		}
-	}
 	/**
 	 * @param pageable
 	 * @return
@@ -219,10 +237,25 @@ public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
 		}
 		return pageable;
 	}
+
+	/**
+	 * @param t
+	 * @param pageable
+	 * @return
+	 */
+	private List<T> findListByEntity(T t, Pageable pageable){
+		SqlBuilder builder = SqlBuildFactory.getSqlBuilder(Const.FIND_BY_ENTITY);
+		final String sql = builder.buildSql(tableClassInfo, t, pageable);
+		final Object[] args = builder.buildArgs(tableClassInfo, t, pageable);
+		RowMapper<T> rowMapper = RowMapperFactory.getRowMapper(clazz);
+		List<T> list = jdbcTemplate.query(sql, args, rowMapper);
+		return list;
+	}
+
 	/**
 	 * @param t
 	 */
-	private void setBaseUpdateEntoty(T t) {
+	private void setBaseUpdateEntity(T t) {
 		if(!(t instanceof AutoLongBaseEntity)) {
 			return;
 		}
@@ -231,6 +264,7 @@ public class BaseDaoImpl<T> extends JdbcDaoSupport implements BaseDao<T> {
 			baseEntity.setLastModifiedDate(new Date());
 		}
 	}
+
 	/**
 	 * @param type
 	 * @return

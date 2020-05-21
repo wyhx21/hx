@@ -1,4 +1,4 @@
 package org.layz.hx.base.inte.entity;
 
-public interface AutoKeyEntity {
+public interface AutoKeyEntity extends LongIdEntity{
 }
