@@ -16,4 +16,8 @@ public @interface HxTable {
 	 * _主键，默认id
 	 */
 	String id() default "id";
+	/**
+	 * 描述信息
+	 */
+	String definition() default "DEFAULT CHARSET=utf8 COMMENT='table'";
 }

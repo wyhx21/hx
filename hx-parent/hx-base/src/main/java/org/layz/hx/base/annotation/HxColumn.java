@@ -31,4 +31,9 @@ public @interface HxColumn {
 	 * 参数
 	 */
 	String param() default "";
+
+	/**
+	 * 描述信息
+	 */
+	String definition() default "";
 }

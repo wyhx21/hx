@@ -4,7 +4,7 @@ import org.layz.hx.base.annotation.HxColumn;
 import org.layz.hx.base.inte.entity.LongIdEntity;
 
 public class SnowLongBaseEntity extends DeletedEntity implements LongIdEntity {
-    @HxColumn
+    @HxColumn(sort = -1,definition = "BIGINT(19) COMMENT '主键ID'")
     private Long id;
 
     @Override

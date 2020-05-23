@@ -11,7 +11,7 @@ public class AutoLongBaseEntity extends DeletedEntity implements AutoKeyEntity {
 	 * 
 	 */
 	private static final long serialVersionUID = -2641209235577591499L;
-	@HxColumn
+	@HxColumn(sort = -1,definition = "BIGINT(19) AUTO_INCREMENT COMMENT '主键ID'")
 	private Long id;
 	@Override
 	public Long getId() {

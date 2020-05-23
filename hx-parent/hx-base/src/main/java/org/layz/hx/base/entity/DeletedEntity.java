@@ -10,7 +10,7 @@ public class DeletedEntity extends BaseEntity{
      *
      */
     private static final long serialVersionUID = 8053568662236406287L;
-    @HxColumn(sort = 101)
+    @HxColumn(sort = 100, definition = "TINYINT(2) COMMENT 'DeletedEnum 是否有效0无效,1有效'")
     private Integer deleted;
 
     public Integer getDeleted() {

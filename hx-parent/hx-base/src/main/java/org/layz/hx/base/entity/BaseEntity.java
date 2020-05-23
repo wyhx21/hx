@@ -12,13 +12,13 @@ public class BaseEntity implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 8053568662236406287L;
-	@HxColumn(sort = 102)
+	@HxColumn(sort = 200,definition = "BIGINT(19) COMMENT '创建人'")
 	private Long createdBy;
-	@HxColumn(sort = 103)
+	@HxColumn(sort = 300,definition = "BIGINT(19) COMMENT '修改人'")
 	private Long lastModifiedBy;
-	@HxColumn(sort = 104)
+	@HxColumn(sort = 400,definition = "datetime COMMENT '创建时间'")
 	private Date createdDate;
-	@HxColumn(sort = 105)
+	@HxColumn(sort = 500,definition = "datetime COMMENT '修改时间'")
 	private Date lastModifiedDate;
 	public Long getCreatedBy() {
 		return createdBy;
