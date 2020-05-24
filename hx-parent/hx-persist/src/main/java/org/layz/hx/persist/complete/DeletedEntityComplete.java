@@ -15,7 +15,7 @@ public class DeletedEntityComplete implements Complete {
         DeletedEntity entity = (DeletedEntity) obj;
         Integer deleted = entity.getDeleted();
         if(null == deleted) {
-            entity.setDeleted(DeletedEnum.DISABLE.getValue());
+            entity.setDeleted(DeletedEnum.ENABLE.getValue());
         }
     }
 }
