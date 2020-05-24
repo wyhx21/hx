@@ -51,7 +51,11 @@ public class HxRuntimeException extends RuntimeException{
     public String getMessage() {
     	return this.messgae;
     }
-    
+
+    public void setMessgae(String messgae) {
+        this.messgae = messgae;
+    }
+
     public String getCode() {
 		return code;
 	}
