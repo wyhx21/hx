@@ -1,4 +1,4 @@
-package org.layz.hx.persist.sql;
+package org.layz.hx.core.util.builder;
 
 import org.layz.hx.core.pojo.info.FieldColumnInfo;
 import org.layz.hx.core.pojo.info.TableClassInfo;
