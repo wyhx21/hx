@@ -7,28 +7,25 @@ import java.util.Date;
 
 @HxSupperClass
 public class BaseJobEntity extends AutoLongBaseEntity {
-    @HxColumn(sort = 1)
+    @HxColumn(sort = 1,definition = "bigint(19) COMMENT '父级id'")
     private Long parentJobId;
-    @HxColumn(sort = 2)
+    @HxColumn(sort = 2,definition = "varchar(128)COMMENT '批次号'")
     private String processNo;
-    @HxColumn(sort = 3)
+    @HxColumn(sort = 3,definition = "varchar(32) COMMENT '扫描类'")
     private String scanTypeName;
-    @HxColumn(sort = 4)
+    @HxColumn(sort = 4,definition = "varchar(32) COMMENT '执行类'")
     private String jobService;
-    /**
-     * 0:待启动任务,1:待处理,2:处理中,3:处理失败,4:处理成功
-     */
-    @HxColumn(sort = 5)
+    @HxColumn(sort = 5,definition = "tinyint(2) DEFAULT NULL COMMENT 'JobStatusEnum 状态 0:待启动任务,1:待处理,2:处理中,3:处理失败,4:处理成功'")
     private Integer status;
-    @HxColumn(sort = 6)
+    @HxColumn(sort = 6,definition = "tinyint(2) DEFAULT '0' COMMENT '失败次数'")
     private Integer failCount;
-    @HxColumn(sort = 7)
+    @HxColumn(sort = 7,definition = "datetime COMMENT '开始执行时间'")
     private Date beginRunTime;
-    @HxColumn(sort = 8)
+    @HxColumn(sort = 8,definition = "datetime COMMENT '运行开始时间'")
     private Date startRunTime;
-    @HxColumn(sort = 9)
+    @HxColumn(sort = 9,definition = "datetime COMMENT '运行结束时间'")
     private Date endRunTime;
-    @HxColumn(sort = 10)
+    @HxColumn(sort = 10,definition = "varchar(2048) COMMENT '执行结果'")
     private String handleResult;
 
     public Long getParentJobId() {
