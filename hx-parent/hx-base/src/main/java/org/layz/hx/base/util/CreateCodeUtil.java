@@ -32,8 +32,5 @@ public class CreateCodeUtil {
         try (CreateFile createFile = new ProviderCreate()){
             createFile.setClass(clazz);
         }
-        try (CreateFile createFile = new ContextXmlCreate()){
-            createFile.setClass(clazz);
-        }
     }
 }

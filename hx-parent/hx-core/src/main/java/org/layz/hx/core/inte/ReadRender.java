@@ -26,7 +26,7 @@ public interface ReadRender {
 	 * @param row 读取的行数据
 	 * @param rowIndex 行序号
 	 */
-	void onRowRead(Object[] row, int rowIndex) throws Throwable;
+	void onRowRead(Object[] row, int rowIndex) throws RuntimeException;
     /**
      * 开始读文件之后，正式读之前会调用此方法，用于做一些准备工作，<br/>
      * 如：初始化对象，或者重置缓存数据之类的
@@ -39,15 +39,16 @@ public interface ReadRender {
      * 如：统计读取了多少行，数据清除之类 <br/>
      * 也可能是读文件产生异常后的调用
      */
-	default void processAfter() {
+	default void processAfter() throws RuntimeException{
 	}
 
 	/**
 	 * 异常处理方式
 	 * @param e
-	 * @throws Throwable
+	 * @param rowIndex
+	 * @throws RuntimeException
 	 */
-	default void exceptionHandler(Throwable e, int rowIndex) throws Throwable {
+	default void exceptionHandler(RuntimeException e, int rowIndex) throws RuntimeException {
 		throw e;
 	}
 }
