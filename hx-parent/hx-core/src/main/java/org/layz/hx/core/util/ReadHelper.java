@@ -42,9 +42,10 @@ public class ReadHelper {
                             render.exceptionHandler(e, readDealer.getRowIndex());
                         }
                     }
+                    render.processAfter();
                 } finally {
                     try {
-                        render.processAfter();
+                        render.close();
                     } catch (Exception e) {
                     }
                 }

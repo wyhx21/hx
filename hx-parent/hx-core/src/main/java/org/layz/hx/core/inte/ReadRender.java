@@ -43,6 +43,13 @@ public interface ReadRender {
 	}
 
 	/**
+	 * 关闭资源
+	 * @throws Exception
+	 */
+	default void close() throws Exception {
+
+	}
+	/**
 	 * 异常处理方式
 	 * @param e
 	 * @param rowIndex
