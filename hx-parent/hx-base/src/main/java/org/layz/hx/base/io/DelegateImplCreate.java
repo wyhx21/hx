@@ -8,9 +8,10 @@ public class DelegateImplCreate extends AbstractCreateCode {
 
     @Override
     protected void setContent() {
+    	
         String str  = className.substring(className.lastIndexOf(".") + 1);
-        importContent.append("import org.apache.dubbo.config.annotation.Service;\n");
-        content.append("\n@Service")
+        importContent.append("import org.apache.dubbo.config.annotation.DubboService;\n");
+        content.append("\n@DubboService")
                 .append("\npublic class ").append(str)
                 .append(" {\n");
 

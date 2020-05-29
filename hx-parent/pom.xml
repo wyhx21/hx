@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.layz.hx</groupId>
 	<artifactId>hx-parent</artifactId>
-	<version>1.0.0</version>
+	<version>1.1.0</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>hx-core</module>
@@ -29,22 +29,24 @@
 		<druid.version>1.1.20</druid.version>
 		<servlet.version>4.0.1</servlet.version>
 		<fastjson.version>1.2.62</fastjson.version>
-		<hx.version>1.0.0</hx.version>
-		<mybatis.version>3.5.3</mybatis.version>
-		<mybatis.spring.version>2.0.3</mybatis.spring.version>
+		<hx.version>1.1.0</hx.version>
+		<mybatis.version>3.5.4</mybatis.version>
+		<mybatis.spring.version>2.0.4</mybatis.spring.version>
 		<httpclient.version>4.5.9</httpclient.version>
 		<commons.lang3.version>3.9</commons.lang3.version>
-		<jackson.json.version>2.10.1</jackson.json.version>
+		<jackson.json.version>2.11.0</jackson.json.version>
 		<mysql.connection.version>8.0.18</mysql.connection.version>
-		<springframework.version>5.2.2.RELEASE</springframework.version>
-		<dubbo.version>2.7.5</dubbo.version>
-		<nacos.version>2.7.5</nacos.version>
-		<zookeeper.version>3.5.6</zookeeper.version>
-		<curator.version>4.2.0</curator.version>
-		<netty.version>4.1.44.Final</netty.version>
+		<springframework.version>5.2.6.RELEASE</springframework.version>
+		<dubbo.version>2.7.7</dubbo.version>
+		<nacos.version>2.7.7</nacos.version>
+		<zookeeper.version>3.6.1</zookeeper.version>
+		<curator.version>4.3.0</curator.version>
+		<netty.version>4.1.48.Final</netty.version>
 		<poi.version>4.1.1</poi.version>
 		<fileupload.version>1.4</fileupload.version>
-		<spring.kafka.version>2.4.0.RELEASE</spring.kafka.version>
+		<spring.kafka.version>2.5.1.RELEASE</spring.kafka.version>
+		<nacos.client.version>1.2.1</nacos.client.version>
+		<nacos.spring.version>0.3.6</nacos.spring.version>
 	</properties>
 
 	<dependencyManagement>
@@ -97,6 +99,11 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-aop</artifactId>
+				<version>${springframework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-messaging</artifactId>
 				<version>${springframework.version}</version>
 			</dependency>
 			<dependency>
@@ -228,6 +235,16 @@
 				<groupId>org.springframework.kafka</groupId>
 				<artifactId>spring-kafka</artifactId>
 				<version>${spring.kafka.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>com.alibaba.nacos</groupId>
+			    <artifactId>nacos-client</artifactId>
+			    <version>${nacos.client.version}</version>
+			</dependency>
+			<dependency>
+			    <groupId>com.alibaba.nacos</groupId>
+			    <artifactId>nacos-spring-context</artifactId>
+			    <version>${nacos.spring.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

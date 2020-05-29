@@ -20,7 +20,7 @@ public class ValidUtil {
      * @param obj
      */
     @SuppressWarnings("unchecked")
-	public static void validParam(Object obj) throws Throwable{
+	public static void validParam(Object obj) throws RuntimeException{
         if(obj instanceof Iterable) {
             for(Object itemObject : (Iterable<?>)obj) {
                 validParam(itemObject, Collections.EMPTY_LIST);
@@ -34,7 +34,7 @@ public class ValidUtil {
      * @param obj
      * @param valid
      */
-    public static void validParam(Object obj, HxValid valid) throws Throwable{
+    public static void validParam(Object obj, HxValid valid) throws RuntimeException{
     	List<String> fieldList = Arrays.asList(valid.value());
         if(obj instanceof Iterable) {
             for(Object itemObject : (Iterable<?>)obj) {
@@ -51,7 +51,7 @@ public class ValidUtil {
      * @param fieldList
      */
     @SuppressWarnings("unchecked")
-	private static void validParam(Object obj, List<String> fieldList) throws Throwable{
+	private static void validParam(Object obj, List<String> fieldList) throws RuntimeException{
         List<FieldValidInfo> validInfo = HxValidSupport.getValidInfo(obj);
         if(null == validInfo || validInfo.isEmpty()) {
             return;
@@ -73,9 +73,17 @@ public class ValidUtil {
      * @param fieldValidInfo
      * @param obj
      */
-    private static void validFieldInfo(FieldValidInfo fieldValidInfo, Object obj) throws Throwable{
+    private static void validFieldInfo(FieldValidInfo fieldValidInfo, Object obj) throws RuntimeException{
         for (Map.Entry<Annotation, Validator> entry : fieldValidInfo.getValidatorMap().entrySet()) {
-            entry.getValue().validate(obj,entry.getKey(),fieldValidInfo);
+            try {
+                entry.getValue().validate(obj,entry.getKey(),fieldValidInfo);
+            } catch (Throwable e) {
+                if(e instanceof RuntimeException) {
+                    throw (RuntimeException) e;
+                } else {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 }
