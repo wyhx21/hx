@@ -27,4 +27,13 @@ public class CreateTableUtil {
         jdbcTemplate.update(sqlBuilder.buildCreateSql());
     }
 
+    /**
+     * @param jdbcTemplate
+     * @param clazz
+     */
+    public static void createTable(JdbcTemplate jdbcTemplate, Class clazz){
+        SqlBuilder sqlBuilder = new SqlBuilder(clazz);
+        jdbcTemplate.update(sqlBuilder.buildDelete());
+        jdbcTemplate.update(sqlBuilder.buildCreateSql());
+    }
 }
