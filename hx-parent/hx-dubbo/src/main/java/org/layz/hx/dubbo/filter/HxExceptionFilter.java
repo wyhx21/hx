@@ -2,13 +2,13 @@ package org.layz.hx.dubbo.filter;
 
 import org.apache.dubbo.common.constants.CommonConstants;
 import org.apache.dubbo.common.extension.Activate;
-import org.apache.dubbo.common.logger.Logger;
-import org.apache.dubbo.common.logger.LoggerFactory;
 import org.apache.dubbo.common.utils.ReflectUtils;
 import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.rpc.*;
 import org.apache.dubbo.rpc.service.GenericService;
 import org.layz.hx.base.exception.HxRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
@@ -34,7 +34,7 @@ public class HxExceptionFilter implements Filter, Filter.Listener {
                     return;
                 }
                 if(HxRuntimeException.class.isInstance(exception)) {
-                    logger.info(exception);
+                    logger.info("",exception);
                     return;
                 }
                 // directly throw if the exception appears in the signature
