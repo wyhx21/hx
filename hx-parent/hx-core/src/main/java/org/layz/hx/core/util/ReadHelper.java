@@ -25,9 +25,9 @@ public class ReadHelper {
 	/**
      * 实施读数据（文件）逻辑
      * @param readDealer 读数据的数据处理类，不能为空
-	 * @throws Throwable
+	 * @throws Exception
 	 */
-	public void processRead(ReadDealer readDealer) throws RuntimeException {
+        public void processRead(ReadDealer readDealer) throws Exception {
 	    Assert.isNotNull(readDealer,ReadResponseEnum.READ_DEALER_ISNULL);
         synchronized (render) {
             readDealer.beginRead();
@@ -38,7 +38,7 @@ public class ReadHelper {
                     while (readDealer.hasNextRow()) {
                         try {
                             render.onRowRead(readDealer.readNextRow(), readDealer.getRowIndex());
-                        } catch (RuntimeException e) {
+                        } catch (Exception e) {
                             render.exceptionHandler(e, readDealer.getRowIndex());
                         }
                     }
