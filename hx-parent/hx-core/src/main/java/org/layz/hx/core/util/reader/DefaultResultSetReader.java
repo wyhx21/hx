@@ -24,17 +24,17 @@ public class DefaultResultSetReader implements DataReader{
 				return resultSet.getString(fieldColumnInfo.getColumnName());
 			} else if (Date.class == type) {
 				return resultSet.getTimestamp(fieldColumnInfo.getColumnName());
-			} else if (Integer.class == type || int.class == type) {
+			} else if (int.class == type) {
 				return resultSet.getInt(fieldColumnInfo.getColumnName());
-			} else if (Long.class == type || long.class == type) {
+			} else if (long.class == type) {
 				return resultSet.getLong(fieldColumnInfo.getColumnName());
-			} else if (Double.class == type || double.class == type) {
+			} else if (double.class == type) {
 				return resultSet.getDouble(fieldColumnInfo.getColumnName());
-			} else if (Boolean.class == type || boolean.class == type) {
+			} else if (boolean.class == type) {
 				return resultSet.getBoolean(fieldColumnInfo.getColumnName());
 			} else if (BigDecimal.class == type) {
 				return resultSet.getBigDecimal(fieldColumnInfo.getColumnName());
-			} else if (Float.class == type || float.class == type) {
+			} else if (float.class == type) {
 				return resultSet.getFloat(fieldColumnInfo.getColumnName());
 			} else {
 				return resultSet.getObject(fieldColumnInfo.getColumnName());
