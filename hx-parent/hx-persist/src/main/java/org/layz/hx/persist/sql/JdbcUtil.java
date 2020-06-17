@@ -1,6 +1,6 @@
 package org.layz.hx.persist.sql;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -23,9 +23,9 @@ public class JdbcUtil {
     }
 
     private DataSource getDataSource(Properties properties){
-        DruidDataSource dataSource = new DruidDataSource();
+        HikariDataSource dataSource = new HikariDataSource();
         dataSource.setDriverClassName(properties.getProperty("hx.spring.jdbc.driver"));
-        dataSource.setUrl(properties.getProperty("hx.spring.jdbc.url"));
+        dataSource.setJdbcUrl(properties.getProperty("hx.spring.jdbc.url"));
         dataSource.setUsername(properties.getProperty("hx.spring.jdbc.username"));
         dataSource.setPassword(properties.getProperty("hx.spring.jdbc.password"));
         return dataSource;

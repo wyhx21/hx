@@ -28,6 +28,18 @@ public class CreateCodeUtil {
         }
     }
 
+    public static void createWebCode(Class clazz) throws Exception{
+        try (CreateFile createFile = new WrapperCreate()){
+            createFile.setClass(clazz);
+        }
+        try (CreateFile createFile = new WrapperImplCreate()){
+            createFile.setClass(clazz);
+        }
+        try (CreateFile createFile = new ControllerCreate()){
+            createFile.setClass(clazz);
+        }
+    }
+
     public static void createProvider(Class clazz) throws Exception{
         try (CreateFile createFile = new ProviderCreate()){
             createFile.setClass(clazz);

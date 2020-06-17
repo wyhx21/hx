@@ -3,7 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                         http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
-	
+
+    <bean id="hxKafkaDefaultTopicListener" class="org.layz.hx.kakfa.listener.HxKafkaDefaultTopicListener"/>
+
 	<bean id="producerProperties" class="java.util.HashMap">
         <constructor-arg>
             <map>
@@ -12,7 +14,7 @@
                 <entry key="batch.size" value="${hx.kafka.producer.batch.size}" />
                 <entry key="linger.ms" value="${hx.kafka.producer.linger.ms}" />
                 <entry key="buffer.memory" value="${hx.kafka.producer.buffer.memory}" />
-                <!--<entry key="acks" value="${hx.kafka.producer.acks}" />-->
+                <entry key="acks" value="${hx.kafka.producer.acks}" />
                 <entry key="key.serializer" value="${hx.kafka.producer.key.serializer}" />
                 <entry key="value.serializer" value="${hx.kafka.producer.value.serializer}" />
             </map>
@@ -20,7 +22,7 @@
     </bean>
 
     <bean id="produceFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
-        <constructor-arg ref="producerProperties"/>
+        <constructor-arg name="configs" ref="producerProperties"/>
     </bean>
 
     <bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
@@ -42,8 +44,39 @@
             </map>
         </constructor-arg>
     </bean>
-    
-    <bean class="org.layz.hx.kakfa.config.HxKafkaConfog" init-method="init">
-        <property name="cunsumerProperTies" ref="cunsumerProperties"/>
+
+    <bean id="hxSpringKafkaMessageListener" class="org.layz.hx.kakfa.listener.HxSpringKafkaMessageListener"/>
+
+    <bean id="topics" factory-bean="hxSpringKafkaMessageListener" factory-method="topics"/>
+
+    <bean id="containerProperties" class="org.springframework.kafka.listener.ContainerProperties">
+        <constructor-arg name="topics" ref="topics"/>
+        <property name="messageListener" ref="hxSpringKafkaMessageListener"/>
+        <property name="ackMode" value="RECORD"/>
     </bean>
+
+    <bean id="consumerFactory" class="org.springframework.kafka.core.DefaultKafkaConsumerFactory">
+        <constructor-arg name="configs" ref="cunsumerProperties"/>
+    </bean>
+
+    <bean id="recoverer" class="org.springframework.kafka.listener.DeadLetterPublishingRecoverer">
+        <constructor-arg name="template" ref="kafkaTemplate"/>
+    </bean>
+
+    <bean id="fixedBackOff" class="org.springframework.util.backoff.FixedBackOff">
+        <constructor-arg name="interval" value="0"/>
+        <constructor-arg name="maxAttempts" value="${hx.kafka.cunsumer.max.attempts}"/>
+    </bean>
+
+    <bean id="errorHandler" class="org.springframework.kafka.listener.SeekToCurrentErrorHandler">
+        <constructor-arg name="recoverer" ref="recoverer"/>
+        <constructor-arg name="backOff" ref="fixedBackOff"/>
+    </bean>
+
+    <bean class="org.springframework.kafka.listener.KafkaMessageListenerContainer">
+        <constructor-arg name="consumerFactory" ref="consumerFactory"/>
+        <constructor-arg name="containerProperties" ref="containerProperties"/>
+        <property name="errorHandler" ref="errorHandler"/>
+    </bean>
+
 </beans>
