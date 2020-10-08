@@ -5,8 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.ResultSet;
+import java.util.Date;
 
 public class DefaultResultSetReader implements DataReader{
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultResultSetReader.class);
@@ -17,8 +17,8 @@ public class DefaultResultSetReader implements DataReader{
 
 	@Override
 	public Object getObject(Object object, FieldColumnInfo fieldColumnInfo) {
+		ResultSet resultSet = (ResultSet) object;
 		try {
-			ResultSet resultSet = (ResultSet) object;
 			Class<?> type = fieldColumnInfo.getFieldType();
 			if (String.class == type) {
 				return resultSet.getString(fieldColumnInfo.getColumnName());
@@ -37,9 +37,14 @@ public class DefaultResultSetReader implements DataReader{
 			} else if (float.class == type) {
 				return resultSet.getFloat(fieldColumnInfo.getColumnName());
 			} else {
-				return resultSet.getObject(fieldColumnInfo.getColumnName());
+				return resultSet.getObject(fieldColumnInfo.getColumnName(),type);
 			}
 		} catch(Exception e) {
+			try {
+				return resultSet.getObject(fieldColumnInfo.getColumnName());
+			} catch (Exception e1) {
+
+			}
 			// LOGGER.debug("getObject error, column: {}", fieldColumnInfo.getColumnName() , e.getMessage());
 		}
 		return defaultValue();

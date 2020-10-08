@@ -11,7 +11,7 @@ import org.layz.hx.base.util.Assert;
 import org.layz.hx.base.util.StringUtil;
 import org.layz.hx.core.enums.PoiResponseEnum;
 import org.layz.hx.core.pojo.info.PoiColumnInfo;
-import org.layz.hx.core.pojo.info.PoiFilenfo;
+import org.layz.hx.core.pojo.info.PoiFileInfo;
 import org.layz.hx.core.support.HxPoiSupport;
 import org.layz.hx.core.util.DateUtil;
 import org.layz.hx.core.util.factory.PoiFormaterFactory;
@@ -49,7 +49,7 @@ public class Excel2007Writer implements Closeable {
 	/**Sheet容纳的最多行数*/
 	private static final int LIMIT_SHEET_ROWS=50000;
 	/**对象信息*/
-	private PoiFilenfo poiFilenfo;
+	private PoiFileInfo poiFileInfo;
 	/**表头样式*/
 	private TitleCellStyle titleCellStyle;
 	/**内容样式*/
@@ -61,8 +61,8 @@ public class Excel2007Writer implements Closeable {
 	 * @throws IOException
 	 */
 	public Excel2007Writer(Class clazz,String path) throws IOException{
-		PoiFilenfo poiFilenfo = HxPoiSupport.getPoiFileInfo(clazz);
-		Assert.isNotNull(poiFilenfo,PoiResponseEnum.POI_INFO_ISNULL);
+		this.poiFileInfo = HxPoiSupport.getPoiFileInfo(clazz);
+		Assert.isNotNull(poiFileInfo,PoiResponseEnum.POI_INFO_ISNULL);
 		File resultFile=new File(path);
 		if(!resultFile.exists()){
 			File dir=resultFile.getParentFile();
@@ -72,7 +72,6 @@ public class Excel2007Writer implements Closeable {
 			resultFile.createNewFile();
 		}
 		this.os=new FileOutputStream(resultFile);
-		this.poiFilenfo = poiFilenfo;
 		setState(IoState.CHECKED);
 		this.beginWrite();
 	}
@@ -84,10 +83,10 @@ public class Excel2007Writer implements Closeable {
 	 * @throws IOException
 	 */
 	public Excel2007Writer(Class clazz, OutputStream outputStream) throws IOException{
-		PoiFilenfo poiFilenfo = HxPoiSupport.getPoiFileInfo(clazz);
+		PoiFileInfo poiFilenfo = HxPoiSupport.getPoiFileInfo(clazz);
 		Assert.isNotNull(poiFilenfo,PoiResponseEnum.POI_INFO_ISNULL);
 		this.os = outputStream;
-		this.poiFilenfo = poiFilenfo;
+		this.poiFileInfo = poiFilenfo;
 		setState(IoState.CHECKED);
 		this.beginWrite();
 	}
@@ -99,13 +98,13 @@ public class Excel2007Writer implements Closeable {
 	public void beginWrite() throws IOException{
 		checkState(IoState.CHECKED);
 		this.workbook = new SXSSFWorkbook(500);
-		if(StringUtil.isNotBlank(poiFilenfo.getSheetName())){
-			this.sheet = workbook.createSheet(poiFilenfo.getSheetName());
+		if(StringUtil.isNotBlank(poiFileInfo.getSheetName())){
+			this.sheet = workbook.createSheet(poiFileInfo.getSheetName());
 		}else{
 			this.sheet = workbook.createSheet();
 		}
 		initColumnWidth();
-		int cellStyle = poiFilenfo.getPoiFile().cellStyle();
+		int cellStyle = poiFileInfo.getPoiFile().cellStyle();
 		this.titleCellStyle = TitleCellStyleFactory.getTitleCellStyle(cellStyle);
 		this.titleCellStyle.setWookBook(this.workbook);
 		setState(IoState.BEGAN);
@@ -122,7 +121,7 @@ public class Excel2007Writer implements Closeable {
 	 */
 	public void createTable() throws IOException{
 		checkState(IoState.BEGAN);
-		Assert.isNotNull(poiFilenfo,PoiResponseEnum.POI_INFO_ISNULL);
+		Assert.isNotNull(poiFileInfo,PoiResponseEnum.POI_INFO_ISNULL);
 		this.writeHeader(true);
 		setState(IoState.READING);
 	}
@@ -153,7 +152,7 @@ public class Excel2007Writer implements Closeable {
 		if(null == rowData) {
 			return;
 		}
-		List<PoiColumnInfo> infos = poiFilenfo.getColumnInfos();
+		List<PoiColumnInfo> infos = poiFileInfo.getColumnInfos();
 		this.newRow();
 		for (int j = 0; j < infos.size(); j++) {
 			PoiColumnInfo columnInfo = infos.get(j);
@@ -171,7 +170,7 @@ public class Excel2007Writer implements Closeable {
 	@Override
 	public void close() throws IOException {
 		setState(IoState.ENDED);
-		this.poiFilenfo = null;
+		this.poiFileInfo = null;
 		this.cellStyleMap = null;
 		this.titleCellStyle = null;
 		if(workbook!=null&&os!=null){
@@ -186,7 +185,7 @@ public class Excel2007Writer implements Closeable {
 	 * @param clazz
 	 */
 	public void setClass(Class clazz,Boolean writeHeader,Boolean withTitle){
-		this.poiFilenfo = HxPoiSupport.getPoiFileInfo(clazz);
+		this.poiFileInfo = HxPoiSupport.getPoiFileInfo(clazz);
 		if(writeHeader) {
 			writeHeader(withTitle);
 		}
@@ -197,12 +196,12 @@ public class Excel2007Writer implements Closeable {
 	 */
 	private void writeHeader(boolean withTitle){
 		if(withTitle) {
-			String titleName = poiFilenfo.getTitleName();
+			String titleName = poiFileInfo.getTitleName();
 			if(StringUtil.isNotBlank(titleName)) {
-				this.newRow().appendCell(poiFilenfo.getTotalCol(),true,titleName,titleCellStyle.getTitleStyle());
+				this.newRow().appendCell(poiFileInfo.getTotalCol(),true,titleName,titleCellStyle.getTitleStyle());
 			}
 		}
-		List<PoiColumnInfo> infos = poiFilenfo.getColumnInfos();
+		List<PoiColumnInfo> infos = poiFileInfo.getColumnInfos();
 		if(null != infos && !infos.isEmpty()) {
 			this.newRow();
 			for (int i = 0; i < infos.size(); i++) {
@@ -233,8 +232,8 @@ public class Excel2007Writer implements Closeable {
 	 * 初始化sheet的列宽
 	 */
 	private void initColumnWidth(){
-		Assert.isNotNull(poiFilenfo, PoiResponseEnum.POI_INFO_ISNULL);
-		List<PoiColumnInfo> infos = poiFilenfo.getColumnInfos();
+		Assert.isNotNull(poiFileInfo, PoiResponseEnum.POI_INFO_ISNULL);
+		List<PoiColumnInfo> infos = poiFileInfo.getColumnInfos();
 		int col = 0;
 		for (int i = 0; i < infos.size(); i++) {
 			PoiColumnInfo columnInfo = infos.get(i);
@@ -268,7 +267,7 @@ public class Excel2007Writer implements Closeable {
 		currColumn = 0;
 		if(rowIndex > LIMIT_SHEET_ROWS + 1){
 			int sheetIndex = workbook.getSheetIndex(this.sheet);
-			this.sheet = workbook.createSheet(this.poiFilenfo.getSheetName()+"(续"+(sheetIndex+1)+")");
+			this.sheet = workbook.createSheet(this.poiFileInfo.getSheetName()+"(续"+(sheetIndex+1)+")");
 			rowIndex=0;
 			writeHeader(true);
 			initColumnWidth();

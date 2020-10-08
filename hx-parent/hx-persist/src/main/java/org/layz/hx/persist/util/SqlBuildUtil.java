@@ -1,9 +1,11 @@
 package org.layz.hx.persist.util;
 
+import org.layz.hx.base.enums.Expression;
 import org.layz.hx.base.pojo.Pageable;
 import org.layz.hx.base.util.StringUtil;
 import org.layz.hx.core.pojo.info.FieldColumnInfo;
 import org.layz.hx.core.pojo.info.TableClassInfo;
+import org.layz.hx.core.support.HxTableSupport;
 import org.layz.hx.persist.inte.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +23,9 @@ public class SqlBuildUtil {
         StringBuilder sqlBuilder = new StringBuilder("select ");
         for (int i = 0; i < fieldList.size(); i++) {
             FieldColumnInfo fieldColumnInfo = fieldList.get(i);
+            if(fieldColumnInfo.getColumn().ignore()) {
+                continue;
+            }
             String columnName = fieldColumnInfo.getColumnName();
             if(i > 0) {
                 sqlBuilder.append(Const.SEPARATOR);
@@ -31,13 +36,13 @@ public class SqlBuildUtil {
         return sqlBuilder;
     }
 
-    public static void buildWhereSql(StringBuilder sql, TableClassInfo tableClassInfo, Object[] param){
+    public static void buildWhereSql(StringBuilder sql, Object[] param){
         Object object = param.length > 0 ? param[0] : null;
         Pageable pageable =  param.length > 1 ? (Pageable)param[1] : null;
 
         if(null != object) {
             int index = 0;
-            List<FieldColumnInfo> fieldList = tableClassInfo.getFieldList();
+            List<FieldColumnInfo> fieldList = HxTableSupport.getTableClassInfo(object.getClass()).getFieldList();
             for (FieldColumnInfo fieldColumnInfo : fieldList) {
                 Class<?> fieldType = fieldColumnInfo.getFieldType();
                 Method methodGet = fieldColumnInfo.getMethodGet();
@@ -49,11 +54,15 @@ public class SqlBuildUtil {
                     if(String.class == fieldType && StringUtil.isBlank(value.toString())) {
                         continue;
                     }
+                    if(value instanceof List && ((List) value).isEmpty()) {
+                        continue;
+                    }
+                    Expression expr = fieldColumnInfo.getColumn().expr();
                     if(index == 0) {
-                        sql.append(" where ").append(fieldColumnInfo.getColumnName()).append(" = ?");
+                        sql.append(" where ").append(fieldColumnInfo.getColumnName()).append(expr.sql(value));
                         index ++;
                     } else {
-                        sql.append(" and ").append(fieldColumnInfo.getColumnName()).append(" = ?");
+                        sql.append(" and ").append(fieldColumnInfo.getColumnName()).append(expr.sql(value));
                     }
                 } catch (Exception e) {
                     LOGGER.error("buildSql error, method: {}", methodGet, e);
@@ -72,13 +81,13 @@ public class SqlBuildUtil {
         }
     }
 
-    public static Object[] buildWhereArgs(TableClassInfo tableClassInfo, Object[] param){
+    public static Object[] buildWhereArgs( Object[] param){
         Object object = param.length > 0 ? param[0] : null;
         Pageable pageable =  param.length > 1 ? (Pageable)param[1] : null;
 
         List<Object> argsList = new ArrayList<Object>();
         if(null != object) {
-            List<FieldColumnInfo> fieldList = tableClassInfo.getFieldList();
+            List<FieldColumnInfo> fieldList = HxTableSupport.getTableClassInfo(object.getClass()).getFieldList();
             for (FieldColumnInfo fieldColumnInfo : fieldList) {
                 Class<?> fieldType = fieldColumnInfo.getFieldType();
                 Method methodGet = fieldColumnInfo.getMethodGet();
@@ -90,7 +99,10 @@ public class SqlBuildUtil {
                     if(String.class == fieldType && StringUtil.isBlank(value.toString())) {
                         continue;
                     }
-                    argsList.add(value);
+                    if(value instanceof List && ((List) value).isEmpty()) {
+                        continue;
+                    }
+                    fieldColumnInfo.getColumn().expr().args(argsList,value);
                 } catch (Exception e) {
                     LOGGER.error("buildSql error, method: {}", methodGet, e);
                 }

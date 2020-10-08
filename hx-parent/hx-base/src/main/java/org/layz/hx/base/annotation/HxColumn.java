@@ -1,5 +1,6 @@
 package org.layz.hx.base.annotation;
 
+import org.layz.hx.base.enums.Expression;
 import org.layz.hx.base.inte.Const;
 
 import java.lang.annotation.ElementType;
@@ -36,4 +37,14 @@ public @interface HxColumn {
 	 * 描述信息
 	 */
 	String definition() default "";
+
+	/**
+	 * 忽略持久化
+	 */
+	boolean ignore() default false;
+
+	/**
+	 * 表达式
+	 */
+	Expression expr() default Expression.eq;
 }

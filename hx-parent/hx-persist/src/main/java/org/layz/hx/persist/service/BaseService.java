@@ -1,11 +1,8 @@
 package org.layz.hx.persist.service;
 
-import org.layz.hx.base.pojo.Page;
-import org.layz.hx.base.pojo.Pageable;
-
 import java.util.List;
 
-public interface BaseService<T>{
+public interface BaseService<T> extends FindPageInfo<T>{
     /**
      * @param t
      * @return
@@ -64,13 +61,6 @@ public interface BaseService<T>{
      * @return
      */
     List<T> findByEntity(T t, String orderBy);
-    /**
-     * _分页查询
-     * @param t
-     * @param pageable
-     * @return
-     */
-    Page<T> findPage(T t, Pageable pageable);
 
     /**
      * @param t

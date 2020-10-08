@@ -14,13 +14,13 @@ public class DeletedByEntitySqlBuilder implements SqlBuilder{
 	@Override
 	public String buildSql(Object[] param, TableClassInfo tableClassInfo) {
 		StringBuilder sql = new StringBuilder("delete from ").append(tableClassInfo.getTableName());
-		SqlBuildUtil.buildWhereSql(sql,tableClassInfo,param);
+		SqlBuildUtil.buildWhereSql(sql,param);
 		return sql.toString();
 	}
 
 	@Override
 	public Object[] buildArgs(Object[] param, TableClassInfo tableClassInfo) {
-		return SqlBuildUtil.buildWhereArgs(tableClassInfo,param);
+		return SqlBuildUtil.buildWhereArgs(param);
 	}
 
 }

@@ -21,6 +21,10 @@ public class DefaultIntegerDataConverter implements DataConverter{
 			return null;
 		} else if(value instanceof Number) {
 			return ((Number)value).intValue();
+		} else if(Boolean.TRUE.equals(value)) {
+			return 1;
+		} else if(Boolean.FALSE.equals(value)) {
+			return 0;
 		}
 		Double parseDouble = Double.parseDouble(value.toString().trim());
 		return parseDouble.intValue();

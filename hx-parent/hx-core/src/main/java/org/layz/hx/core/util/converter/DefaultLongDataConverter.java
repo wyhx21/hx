@@ -18,6 +18,10 @@ public class DefaultLongDataConverter implements DataConverter{
 			return null;
 		}else if(value instanceof Number) {
 			return ((Number)value).longValue();
+		}else if(Boolean.TRUE.equals(value)) {
+			return 1L;
+		}else if(Boolean.FALSE.equals(value)) {
+			return 0L;
 		}
 		Double parseDouble = Double.parseDouble(value.toString().trim());
 		return parseDouble.longValue();

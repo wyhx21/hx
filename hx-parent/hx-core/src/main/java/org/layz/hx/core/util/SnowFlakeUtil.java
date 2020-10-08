@@ -13,15 +13,15 @@ public class SnowFlakeUtil {
     private static final Logger LOOGER = LoggerFactory.getLogger(SnowFlakeUtil.class);
 
     private final long workerId;
-    private final long epoch = 1590325575378L; // 时间起始标记点，作为基准，一般取系统的最近时间
+    private final long epoch = 1599995731346L; // 时间起始标记点，作为基准，一般取系统的最近时间
     private final long workerIdBits = 10L; // 机器标识位数
     private final long maxWorkerId = -1L ^ -1L << this.workerIdBits;// 机器ID最大值:
     // 1023
     private long sequence = 0L; // 0，并发控制
-    private final long sequenceBits = 12L; // 毫秒内自增位
+    private final long sequenceBits = 7L; // 毫秒内自增位
 
-    private final long workerIdShift = this.sequenceBits; // 12
-    private final long timestampLeftShift = this.sequenceBits + this.workerIdBits;// 22
+    private final long workerIdShift = this.sequenceBits; // 7
+    private final long timestampLeftShift = this.sequenceBits + this.workerIdBits;// 17
     private final long sequenceMask = -1L ^ -1L << this.sequenceBits; // 4095,111111111111,12位
     private long lastTimestamp = -1L;
 
@@ -95,5 +95,10 @@ public class SnowFlakeUtil {
      */
     private static long timeGen() {
         return System.currentTimeMillis();
+    }
+
+    public static void main(String[] args) {
+        long l = System.currentTimeMillis();
+        getSnowFlake().nextId();
     }
 }

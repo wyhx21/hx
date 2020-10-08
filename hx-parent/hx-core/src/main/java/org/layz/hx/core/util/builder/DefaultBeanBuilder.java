@@ -41,6 +41,9 @@ public class DefaultBeanBuilder extends AbstractBeanBuilder {
         DataReader dataReader = DataReaderFactory.getDataReader(source);
         for (FieldColumnInfo fieldColumnInfo : fieldList) {
             try {
+                if(fieldColumnInfo.getColumn().ignore()) {
+                    continue;
+                }
                 Object value = dataReader.getObject(source, fieldColumnInfo);
                 value = fieldColumnInfo.getDataformater().format(instance,value, fieldColumnInfo, cacheMap);
                 value = fieldColumnInfo.getDataConverter().dataConvert(value, cacheMap);

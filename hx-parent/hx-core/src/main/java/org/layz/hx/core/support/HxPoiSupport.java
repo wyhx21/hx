@@ -3,7 +3,7 @@ package org.layz.hx.core.support;
 import org.layz.hx.base.annotation.HxPoiColumn;
 import org.layz.hx.base.annotation.HxPoiFile;
 import org.layz.hx.core.pojo.info.PoiColumnInfo;
-import org.layz.hx.core.pojo.info.PoiFilenfo;
+import org.layz.hx.core.pojo.info.PoiFileInfo;
 import org.layz.hx.core.util.ClassUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +15,22 @@ import java.util.stream.Collectors;
 
 public class HxPoiSupport {
     private static final Logger LOGGER = LoggerFactory.getLogger(HxPoiSupport.class);
-    private static final Map<Object, PoiFilenfo> store = new ConcurrentHashMap<>();
+    private static final Map<Object, PoiFileInfo> store = new ConcurrentHashMap<>();
 
-    public static PoiFilenfo getPoiFileInfo(Class clazz){
-        PoiFilenfo poiFilenfo = store.get(clazz);
-        if(null != poiFilenfo) {
-            return poiFilenfo;
+    public static PoiFileInfo getPoiFileInfo(Class clazz){
+        PoiFileInfo poiFileInfo = store.get(clazz);
+        if(null != poiFileInfo) {
+            return poiFileInfo;
         }
         LOGGER.debug("get new poiFileInfo, class: {}", clazz);
-        poiFilenfo = getnNewPoiFileInfo(clazz);
-        if(null != poiFilenfo) {
-            store.put(clazz,poiFilenfo);
+        poiFileInfo = getnNewPoiFileInfo(clazz);
+        if(null != poiFileInfo) {
+            store.put(clazz,poiFileInfo);
         }
-        return poiFilenfo;
+        return poiFileInfo;
     }
 
-    private static PoiFilenfo getnNewPoiFileInfo(Class clazz) {
+    private static PoiFileInfo getnNewPoiFileInfo(Class clazz) {
         if(!clazz.isAnnotationPresent(HxPoiFile.class)) {
             LOGGER.debug("please set annotation @HxPoiFile");
             return null;
@@ -50,13 +50,13 @@ public class HxPoiSupport {
         setFiledInfo(infos,clazz,hxPoiFile.columns());
         infos = infos.stream().sorted(Comparator.comparing(PoiColumnInfo::getSort)).collect(Collectors.toList());
         int sum = infos.stream().mapToInt(PoiColumnInfo::getCols).sum();
-        PoiFilenfo poiFilenfo = new PoiFilenfo();
-        poiFilenfo.setPoiFile(hxPoiFile);
-        poiFilenfo.setSheetName(sheetName);
-        poiFilenfo.setTitleName(title);
-        poiFilenfo.setColumnInfos(infos);
-        poiFilenfo.setTotalCol(sum);
-        return poiFilenfo;
+        PoiFileInfo poiFileInfo = new PoiFileInfo();
+        poiFileInfo.setPoiFile(hxPoiFile);
+        poiFileInfo.setSheetName(sheetName);
+        poiFileInfo.setTitleName(title);
+        poiFileInfo.setColumnInfos(infos);
+        poiFileInfo.setTotalCol(sum);
+        return poiFileInfo;
     }
 
     /**

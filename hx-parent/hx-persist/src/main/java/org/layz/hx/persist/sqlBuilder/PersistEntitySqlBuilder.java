@@ -32,6 +32,9 @@ public class PersistEntitySqlBuilder implements SqlBuilder {
 			if(autoKey && id.equals(columnName)) {
 				continue;
 			}
+			if(fieldColumnInfo.getColumn().ignore()) {
+				continue;
+			}
 			if(begin) {
 				sqlBuilder.append(columnName);
 				paramBuilder.append("? ");
@@ -55,6 +58,9 @@ public class PersistEntitySqlBuilder implements SqlBuilder {
 		for (FieldColumnInfo fieldColumnInfo : fieldList) {
 			String columnName = fieldColumnInfo.getColumnName();
 			if(autoKey && id.equals(columnName)) {
+				continue;
+			}
+			if(fieldColumnInfo.getColumn().ignore()) {
 				continue;
 			}
 			try {

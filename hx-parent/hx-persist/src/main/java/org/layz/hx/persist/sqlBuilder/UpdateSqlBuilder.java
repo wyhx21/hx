@@ -28,6 +28,9 @@ public class UpdateSqlBuilder implements SqlBuilder{
 				if(tableClassInfo.getId().contentEquals(fieldColumnInfo.getColumnName())) {
 					continue;
 				}
+				if(fieldColumnInfo.getColumn().ignore()) {
+					continue;
+				}
 				if(isBegin) {
 					sqlBuilder.append(" set ").append(fieldColumnInfo.getColumnName()).append(" = ?");
 					isBegin = false;
@@ -49,6 +52,9 @@ public class UpdateSqlBuilder implements SqlBuilder{
 		List<Object> args = new ArrayList<Object>();
 		Object id = null;
 		for (FieldColumnInfo fieldColumnInfo : fieldList) {
+			if(fieldColumnInfo.getColumn().ignore()) {
+				continue;
+			}
 			Method methodGet = fieldColumnInfo.getMethodGet();
 			try {
 				Object value = methodGet.invoke(entity);

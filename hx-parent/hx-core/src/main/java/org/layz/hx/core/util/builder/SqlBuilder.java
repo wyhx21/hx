@@ -14,6 +14,9 @@ public class SqlBuilder {
     public String buildCreateSql() {
         StringBuilder builder = new StringBuilder(String.format("CREATE TABLE `%s` (\n",classInfo.getTableName()));
         for (FieldColumnInfo columnInfo : classInfo.getFieldList()) {
+            if(columnInfo.getColumn().ignore()) {
+                continue;
+            }
             builder.append(String.format("    `%s` %s,\n", columnInfo.getColumnName(),columnInfo.getColumn().definition()));
         }
         builder.append(String.format("    PRIMARY KEY (`%s`)\n",classInfo.getId()));

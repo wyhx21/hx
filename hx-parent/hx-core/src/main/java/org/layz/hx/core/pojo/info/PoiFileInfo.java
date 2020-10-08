@@ -4,7 +4,7 @@ import org.layz.hx.base.annotation.HxPoiFile;
 
 import java.util.List;
 
-public class PoiFilenfo {
+public class PoiFileInfo {
     private HxPoiFile poiFile;
     private String sheetName;
     private String titleName;
