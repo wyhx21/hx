@@ -10,4 +10,5 @@
 	<import resource="classpath*:beanxml/spring-hx-kafka.xml"/>
 	<import resource="classpath*:beanxml/spring-*-dubbo.xml"/>
 	<import resource="classpath*:beanxml/spring-*-package.xml"/>
+	<import resource="classpath*:beanxml/spring-*-bean.xml"/>
 </beans>
