@@ -18,13 +18,15 @@ public abstract class AbstractCreateCode implements CreateFile {
         baseFile = new File(new File(path).getParentFile().getParentFile(),basePack);
         setClassName();
         createFile();
-        setContent();
-        write();
     }
 
     protected void createFile() throws Exception{
         String path = className.replaceAll("\\.","/") + ".java";
         File codeFile = new File(baseFile,path);
+        if(codeFile.exists()) {
+            System.out.println(codeFile.getAbsoluteFile() + " exists");
+            return;
+        }
         File parentFile = codeFile.getParentFile();
         if(!parentFile.exists()) {
             parentFile.mkdirs();
@@ -32,6 +34,8 @@ public abstract class AbstractCreateCode implements CreateFile {
         codeFile.createNewFile();
         System.out.println(codeFile.getAbsoluteFile());
         fos = new FileOutputStream(codeFile);
+        setContent();
+        write();
     }
 
     protected void appendLog(){

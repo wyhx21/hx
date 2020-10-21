@@ -61,7 +61,7 @@ public abstract class JobTemplate<T extends BaseJobEntity> extends HxSchedulingC
     }
 
     @Override
-    public void excute(){
+    public void execute(){
         if(null == jobResultHandler) {
             jobResultHandler = new JobResultHandlerImpl();
         }

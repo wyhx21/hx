@@ -1,4 +1,6 @@
-package org.layz.hx.base.io;
+package org.layz.hx.base.io.service;
+
+import org.layz.hx.base.io.CreateFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +15,10 @@ public class MapperXmlCreate implements CreateFile {
         basePack +=  clazzName.substring(clazzName.lastIndexOf("entity") + 7)
                 .replace(".","/") + "Mapper.xml";
         File file = new File(new File(path).getParentFile().getParentFile(),basePack);
+        if(file.exists()) {
+            System.out.println(file.getAbsoluteFile() + " exists");
+            return;
+        }
         System.out.println(file.getAbsoluteFile());
         File parentFile = file.getParentFile();
         if(!parentFile.exists()) {
@@ -29,7 +35,9 @@ public class MapperXmlCreate implements CreateFile {
 
     @Override
     public void close() throws Exception {
-        fos.flush();
-        fos.close();
+        if(null != fos) {
+            fos.flush();
+            fos.close();
+        }
     }
 }

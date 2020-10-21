@@ -1,6 +1,10 @@
 package org.layz.hx.base.util;
 
 import org.layz.hx.base.io.*;
+import org.layz.hx.base.io.service.*;
+import org.layz.hx.base.io.web.ControllerCreate;
+import org.layz.hx.base.io.web.WrapperCreate;
+import org.layz.hx.base.io.web.WrapperImplCreate;
 
 public class CreateCodeUtil {
 
@@ -42,6 +46,9 @@ public class CreateCodeUtil {
 
     public static void createProvider(Class clazz) throws Exception{
         try (CreateFile createFile = new ProviderCreate()){
+            createFile.setClass(clazz);
+        }
+        try (CreateFile createFile = new PackageXmlCreate()){
             createFile.setClass(clazz);
         }
     }

@@ -1,4 +1,6 @@
-package org.layz.hx.base.io;
+package org.layz.hx.base.io.service;
+
+import org.layz.hx.base.io.AbstractCreateCode;
 
 public class DelegateImplCreate extends AbstractCreateCode {
     @Override

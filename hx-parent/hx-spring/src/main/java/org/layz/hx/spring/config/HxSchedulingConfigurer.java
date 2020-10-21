@@ -18,10 +18,14 @@ public abstract class HxSchedulingConfigurer implements SchedulingConfigurer, Tr
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.addTriggerTask(()->{
-            LOGGER.debug("task excute begin...");
             long begin = System.currentTimeMillis();
-            excute();
-            LOGGER.debug("task excute end, excute time: {}...",System.currentTimeMillis() - begin);
+            try {
+                LOGGER.debug("task execute begin...");
+                execute();
+                LOGGER.debug("task execute end, execute time: {}...",System.currentTimeMillis() - begin);
+            } catch (Exception e) {
+                LOGGER.error("task execute error, execute time: {}...",(System.currentTimeMillis() - begin), e);
+            }
         },this);
     }
 
@@ -37,7 +41,7 @@ public abstract class HxSchedulingConfigurer implements SchedulingConfigurer, Tr
     /**
      * 定时任务执行逻辑
      */
-    public abstract void excute();
+    public abstract void execute();
 
     /**
      * 定时任务Cron表达式

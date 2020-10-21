@@ -1,4 +1,6 @@
-package org.layz.hx.base.io;
+package org.layz.hx.base.io.web;
+
+import org.layz.hx.base.io.AbstractCreateCode;
 
 public class WrapperCreate extends AbstractCreateCode {
     @Override

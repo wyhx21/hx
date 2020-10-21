@@ -2,6 +2,7 @@ package org.layz.hx.persist.repository;
 
 import org.layz.hx.base.entity.BaseJobEntity;
 import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.core.support.HxTableSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +10,7 @@ import java.util.Date;
 
 public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> implements BaseJobDao<T>{
     private String tableName;
-    private Integer failCount;
+    private Integer failCount = 5;
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseJobDaoImpl.class);
 
     @Override
@@ -36,8 +37,10 @@ public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> impl
         return jdbcTemplate.update(sql, JobStatusEnum.WAITE_START.getValue(), new Date(), parentJobId,JobStatusEnum.WAITE_HANDLE.getValue());
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    @Override
+    public void setClazz(Class<T> clazz) {
+        super.setClazz(clazz);
+        this.tableName = HxTableSupport.getTableClassInfo(clazz).getTableName();
     }
 
     public void setFailCount(Integer failCount) {
