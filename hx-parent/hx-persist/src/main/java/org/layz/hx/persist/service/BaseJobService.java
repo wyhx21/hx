@@ -2,6 +2,8 @@ package org.layz.hx.persist.service;
 
 import org.layz.hx.base.entity.BaseJobEntity;
 
+import java.util.List;
+
 public interface BaseJobService<T extends BaseJobEntity> extends BaseService<T> {
     /**
      * 1: 扫描类为 scanTypeName
@@ -23,7 +25,7 @@ public interface BaseJobService<T extends BaseJobEntity> extends BaseService<T> 
 
     /**
      * 更新下一个批次号
-     * @param parentJobId
+     * @param nextJobList
      */
-    int updateNextJob(Long parentJobId);
+    void updateNextJob(List<Long> nextJobList);
 }

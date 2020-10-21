@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 
 public abstract class BaseJobServiceImpl<T extends BaseJobEntity> extends BaseServiceImpl<T> implements  BaseJobService<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseJobServiceImpl.class);
@@ -30,9 +31,9 @@ public abstract class BaseJobServiceImpl<T extends BaseJobEntity> extends BaseSe
     }
 
     @Override
-    public int updateNextJob(Long parentJobId) {
-        int count = getBaseDao().updateNextJob(parentJobId);
-        LOGGER.debug("count: {}", count);
-        return count;
+    @Transactional
+    public void updateNextJob(List<Long> nextJobList) {
+        LOGGER.debug("updateNextJob");
+        getBaseDao().updateNextJob(nextJobList);
     }
 }

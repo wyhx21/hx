@@ -38,7 +38,7 @@ public class BaseDaoImpl<T> implements BaseDao<T> {
 	protected Class<T> clazz;
 	private TableClassInfo tableClassInfo;
 	@Value("${hx.persist.batch.size:200}")
-	private int batchSize;
+	protected int batchSize;
 	@Autowired
 	protected JdbcTemplate jdbcTemplate;
 

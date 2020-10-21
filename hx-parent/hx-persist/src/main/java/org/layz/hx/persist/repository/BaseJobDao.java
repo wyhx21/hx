@@ -3,6 +3,7 @@ package org.layz.hx.persist.repository;
 import org.layz.hx.base.entity.BaseJobEntity;
 
 import java.util.Date;
+import java.util.List;
 
 public interface BaseJobDao<T extends BaseJobEntity> extends BaseDao<T> {
     /**
@@ -24,7 +25,7 @@ public interface BaseJobDao<T extends BaseJobEntity> extends BaseDao<T> {
 
     /**
      * 更新下一个批次
-     * @param parentJobId
+     * @param nextJobList
      */
-    int updateNextJob(Long parentJobId);
+    void updateNextJob(List<Long> nextJobList);
 }

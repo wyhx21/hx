@@ -1,8 +1,10 @@
 package org.layz.hx.persist.service;
 
+import org.layz.hx.core.inte.FindPageWrapper;
+
 import java.util.List;
 
-public interface BaseService<T> extends FindPageInfo<T>{
+public interface BaseService<T> extends FindPageWrapper<T> {
     /**
      * @param t
      * @return

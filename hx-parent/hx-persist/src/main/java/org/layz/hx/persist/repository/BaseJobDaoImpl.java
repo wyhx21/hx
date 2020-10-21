@@ -5,12 +5,14 @@ import org.layz.hx.base.type.JobStatusEnum;
 import org.layz.hx.core.support.HxTableSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.List;
 
 public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> implements BaseJobDao<T>{
     private String tableName;
-    private Integer failCount = 5;
+    private Integer failCount;
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseJobDaoImpl.class);
 
     @Override
@@ -31,10 +33,19 @@ public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> impl
     }
 
     @Override
-    public int updateNextJob(Long parentJobId) {
-        LOGGER.debug("parentJobId: {}", parentJobId);
+    public void updateNextJob(List<Long> nextJobList) {
+        LOGGER.debug("updateNextJob");
+        if(CollectionUtils.isEmpty(nextJobList)) {
+            LOGGER.info("nextJobIdList is empty");
+            return;
+        }
         String sql = "update " + tableName + " set `status` = ?,lastModifiedDate = ? where parentJobId = ? and `status` = ?";
-        return jdbcTemplate.update(sql, JobStatusEnum.WAITE_START.getValue(), new Date(), parentJobId,JobStatusEnum.WAITE_HANDLE.getValue());
+        jdbcTemplate.batchUpdate(sql, nextJobList,super.batchSize, (ps, argument) -> {
+            ps.setInt(1,JobStatusEnum.WAITE_START.getValue());
+            ps.setDate(2, new java.sql.Date(System.currentTimeMillis()));
+            ps.setLong(3, argument);
+            ps.setInt(4, JobStatusEnum.WAITE_HANDLE.getValue());
+        });
     }
 
     @Override

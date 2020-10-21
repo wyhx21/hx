@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class BaseJobDelegateImpl<T extends BaseJobEntity> implements BaseJobDelegate<T> {
     private static final Logger LOGGER = LoggerFactory.getLogger(BaseJobDelegateImpl.class);
@@ -40,9 +42,7 @@ public abstract class BaseJobDelegateImpl<T extends BaseJobEntity> implements Ba
             return;
         }
         LOGGER.debug("size: {}", list.size());
-        for (T entity : list) {
-            getService().update(entity);
-        }
+        getService().updateBatch(list);
     }
 
     @Override
@@ -50,12 +50,8 @@ public abstract class BaseJobDelegateImpl<T extends BaseJobEntity> implements Ba
         if(null == nextJobList || nextJobList.isEmpty()) {
             return;
         }
+        nextJobList = nextJobList.stream().filter(Objects::nonNull).collect(Collectors.toList());
         LOGGER.debug("size: {}", nextJobList.size());
-        for (Long id : nextJobList) {
-            if(null == id) {
-                continue;
-            }
-            getService().updateNextJob(id);
-        }
+        getService().updateNextJob(nextJobList);
     }
 }
