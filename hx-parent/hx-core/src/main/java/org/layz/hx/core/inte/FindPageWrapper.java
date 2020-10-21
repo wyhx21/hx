@@ -1,9 +1,9 @@
-package org.layz.hx.persist.service;
+package org.layz.hx.core.inte;
 
 import org.layz.hx.base.pojo.Page;
 import org.layz.hx.base.pojo.Pageable;
 
-public interface FindPageInfo<T> {
+public interface FindPageWrapper<T> {
     /**
      * _分页查询
      * @param t

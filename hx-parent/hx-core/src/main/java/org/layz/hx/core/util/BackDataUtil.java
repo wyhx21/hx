@@ -1,11 +1,10 @@
-package org.layz.hx.persist.util;
+package org.layz.hx.core.util;
 
 import org.layz.hx.base.pojo.Page;
 import org.layz.hx.base.pojo.Pageable;
+import org.layz.hx.core.inte.FindPageWrapper;
 import org.layz.hx.core.visitor.SqlDataVisitor;
 import org.layz.hx.core.visitor.Visitor;
-import org.layz.hx.persist.service.FindPageInfo;
-import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -18,22 +17,22 @@ public class BackDataUtil<T> implements AutoCloseable{
     private int page;
     private int size = 2000;
     private T param;
-    private FindPageInfo<T> findPageInfo;
+    private FindPageWrapper<T> findPageWrapper;
     private Visitor visitor;
 
-    public BackDataUtil(String path, FindPageInfo<T> findPageInfo) throws IOException {
+    public BackDataUtil(String path, FindPageWrapper<T> findPageWrapper) throws IOException {
         File file = new File(path);
         File parentFile = file.getParentFile();
         if(!parentFile.exists()) {
             parentFile.mkdirs();
         }
         this.os = new FileOutputStream(file);
-        this.findPageInfo = findPageInfo;
+        this.findPageWrapper = findPageWrapper;
     }
 
-    public BackDataUtil(OutputStream os,FindPageInfo<T> findPageInfo)  {
+    public BackDataUtil(OutputStream os, FindPageWrapper<T> findPageWrapper)  {
         this.os = os;
-        this.findPageInfo = findPageInfo;
+        this.findPageWrapper = findPageWrapper;
     }
 
     public void excute() throws IOException{
@@ -49,8 +48,8 @@ public class BackDataUtil<T> implements AutoCloseable{
     }
 
     private boolean backPage() throws IOException {
-        Page<T> pageData = findPageInfo.findPage(param, new Pageable(page, size));
-        if(null == pageData || CollectionUtils.isEmpty(pageData.getData())) {
+        Page<T> pageData = findPageWrapper.findPage(param, new Pageable(page, size));
+        if(null == pageData || null == pageData.getData() || pageData.getData().isEmpty()) {
             return false;
         }
         List<T> data = pageData.getData();
