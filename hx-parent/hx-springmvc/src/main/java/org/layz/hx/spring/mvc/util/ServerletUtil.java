@@ -3,8 +3,10 @@ package org.layz.hx.spring.mvc.util;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.DispatcherServlet;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +46,12 @@ public class ServerletUtil {
 		return getRequest().getSession();
 	}
 
+	/**
+	 * @return
+	 */
+	public ApplicationContext getContext(){
+		return (ApplicationContext) getRequest().getAttribute(DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+	}
 	/**
 	 * 获取获取客户端IP
 	 * @return
