@@ -8,4 +8,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequireUrlPermission {
+    /**
+     * 权限组
+     */
+    String group() default "";
 }

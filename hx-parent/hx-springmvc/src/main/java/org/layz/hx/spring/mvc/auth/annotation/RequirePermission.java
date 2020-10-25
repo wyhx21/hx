@@ -19,4 +19,8 @@ public @interface RequirePermission {
      * 权限逻辑
      */
     Logical type() default Logical.OR;
+    /**
+     * 权限组
+     */
+    String group() default "";
 }

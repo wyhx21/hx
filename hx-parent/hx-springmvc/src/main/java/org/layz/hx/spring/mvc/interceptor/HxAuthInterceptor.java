@@ -2,6 +2,7 @@ package org.layz.hx.spring.mvc.interceptor;
 
 import org.layz.hx.base.exception.HxRuntimeException;
 import org.layz.hx.base.util.Assert;
+import org.layz.hx.base.util.StringUtil;
 import org.layz.hx.core.enums.HxResponseEnum;
 import org.layz.hx.spring.mvc.auth.annotation.RequirePermission;
 import org.layz.hx.spring.mvc.auth.annotation.RequireUrlPermission;
@@ -12,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
@@ -20,7 +22,13 @@ import java.util.List;
 
 public class HxAuthInterceptor implements HandlerInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(HxAuthInterceptor.class);
+    private String permissionGroup;
     private AuthWrapper authWrapper;
+    @PostConstruct
+    public void init(){
+        this.permissionGroup = System.getProperty("permissionGroup");
+    }
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         if(null == handler) {
@@ -44,6 +52,7 @@ public class HxAuthInterceptor implements HandlerInterceptor {
         if(null == permission) {
             return;
         }
+        validPermissionGroup(permission.group());
         String contextPath = request.getContextPath();
         String requestURI = request.getRequestURI();
         String url = requestURI.replace(contextPath,"");
@@ -63,6 +72,7 @@ public class HxAuthInterceptor implements HandlerInterceptor {
         if(null == permission) {
             return;
         }
+        validPermissionGroup(permission.group());
         Logical type = permission.type();
         String[] value = permission.value();
         List<String> authCode = authWrapper.authCode();
@@ -83,6 +93,21 @@ public class HxAuthInterceptor implements HandlerInterceptor {
         } catch (HxRuntimeException e) {
             LOGGER.info("authValid error, require permission is: {}", Arrays.toString(value));
             throw e;
+        }
+    }
+
+    /**
+     * 权限组校验
+     * @param group
+     */
+    private void validPermissionGroup(String group){
+        if(StringUtil.isNotBlank(group)) {
+            try {
+                Assert.isTrue(group.equals(this.permissionGroup), HxResponseEnum.NOT_AUTH_ERROR);
+            } catch (HxRuntimeException e) {
+                LOGGER.info("validPermissionGroup error, require group: {}, systemGroup is: {}", group, this.permissionGroup);
+                throw e;
+            }
         }
     }
 
