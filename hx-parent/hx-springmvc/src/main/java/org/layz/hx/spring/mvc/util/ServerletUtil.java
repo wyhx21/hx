@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +50,7 @@ public class ServerletUtil {
 	 * @return
 	 */
 	public ApplicationContext getContext(){
-		return (ApplicationContext) getRequest().getAttribute(DispatcherServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+		return RequestContextUtils.findWebApplicationContext(getRequest());
 	}
 	/**
 	 * 获取获取客户端IP
