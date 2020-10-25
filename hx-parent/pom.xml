@@ -256,6 +256,24 @@
 	</dependencyManagement>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<includes>
+					<include>beanxml/*.xml</include>
+					<include>prop/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<targetPath>META-INF</targetPath>
+				<includes>
+					<include>services/**</include>
+					<include>dubbo/**</include>
+					<include>spring/**</include>
+				</includes>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
