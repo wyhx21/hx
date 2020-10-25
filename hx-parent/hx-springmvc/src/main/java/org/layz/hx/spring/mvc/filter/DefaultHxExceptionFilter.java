@@ -43,9 +43,6 @@ public class DefaultHxExceptionFilter implements Filter {
         try {
             chain.doFilter(request, response);
         } catch (Exception ex) {
-            if(null == ex) {
-                return;
-            }
             JsonResponse jsonResult = getHandleResult(ex.getCause());
             if(null == jsonResult) {
                 LOGGER.info("handle exception, jsonRespons is null", ex.getMessage());
