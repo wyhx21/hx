@@ -64,8 +64,8 @@ public class RequestWrapper implements RequestInfo {
     }
 
     @Override
-    public void tickOut(String sessionKey) {
-        this.request.tickOut(sessionKey);
+    public void tickOut(BaseLoginInfo baseLoginInfo) {
+        this.request.tickOut(baseLoginInfo);
     }
 
     @Override

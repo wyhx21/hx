@@ -7,6 +7,7 @@ import org.layz.hx.core.util.requestInfo.RequestWrapper;
 
 public class RequestInfoFactory {
     private static final String SPRING = "spring";
+    private static final Long mutiy = 60 * 1000L;
     private RequestInfoFactory() {}
 
     public static void init(String type, Long timeOut){
@@ -16,7 +17,7 @@ public class RequestInfoFactory {
         } else {
             requestInfo = new MemoCacheRequest();
         }
-        requestInfo.setTimeOut(timeOut);
+        requestInfo.setTimeOut(timeOut * mutiy);
         RequestUtil.getInstance().setRequestInfo(requestInfo);
     }
 }

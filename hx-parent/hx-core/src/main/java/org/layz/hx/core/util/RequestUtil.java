@@ -139,10 +139,10 @@ public class RequestUtil {
 
     /**
      * 踢出
-     * @param sessionKey
+     * @param baseLoginInfo
      */
-    public void tickOut(String sessionKey){
-        requestInfo.tickOut(sessionKey);
+    public void tickOut(BaseLoginInfo baseLoginInfo){
+        requestInfo.tickOut(baseLoginInfo);
     }
     /*****************************************************************************************/
     /**

@@ -69,9 +69,9 @@ public interface RequestInfo extends Serializable {
 
     /**
      * 剔除
-     * @param sessionKey
+     * @param baseLoginInfo
      */
-    void tickOut(String sessionKey);
+    void tickOut(BaseLoginInfo baseLoginInfo);
 
     /**
      * 设置超时时间

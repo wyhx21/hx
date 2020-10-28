@@ -60,6 +60,7 @@ public class MemoCacheRequest implements RequestInfo {
             LOGGER.debug("token is timeOut");
             return null;
         }
+        context.setSessionTime();
         return context;
     }
 
@@ -138,7 +139,12 @@ public class MemoCacheRequest implements RequestInfo {
     }
 
     @Override
-    public void tickOut(String sessionKey) {
+    public void tickOut(BaseLoginInfo baseLoginInfo) {
+        if(null == baseLoginInfo) {
+            LOGGER.debug("baseLoginInfo is null");
+            return;
+        }
+        String sessionKey = baseLoginInfo.getKey();
         if(StringUtil.isBlank(sessionKey)) {
             LOGGER.debug("sessionKey is blank");
             return;
