@@ -1,6 +1,8 @@
 package org.layz.hx.base.inte;
 
-public interface BaseLoginInfo {
+import java.io.Serializable;
+
+public interface BaseLoginInfo extends Serializable {
     /**
      * 获取登录信息的key
      * @return

@@ -1,6 +1,7 @@
 package org.layz.hx.spring.mvc.filter;
 
 import org.layz.hx.core.util.RequestUtil;
+import org.layz.hx.core.util.factory.RequestInfoFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,20 +16,23 @@ public class RequestContextFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         String value = filterConfig.getInitParameter("sessionTimeOut");
+        String type = filterConfig.getInitParameter("requestType");
+        Long sessionTimeOut;
         try {
-            Long sessionTimeOut = Long.parseLong(value);
+            sessionTimeOut = Long.parseLong(value);
             LOGGER.info("sessionTimeOut is: {}", sessionTimeOut);
-            RequestUtil.getInstance().setTimeOut(sessionTimeOut);
         } catch (Exception e) {
             LOGGER.info("sessionTimeOut error, value is: {}", value);
+            sessionTimeOut = 30L;
         }
+        RequestInfoFactory.init(type, sessionTimeOut);
     }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if(request instanceof HttpServletRequest) {
             String token = ((HttpServletRequest) request).getHeader(authToken);
-            RequestUtil.getInstance().setContext(token);
+            RequestUtil.getInstance().setToken(token);
             try {
                 chain.doFilter(request, response);
             } finally {
