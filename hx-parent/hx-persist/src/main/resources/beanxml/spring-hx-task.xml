@@ -7,7 +7,11 @@
            http://www.springframework.org/schema/task
            http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 	
-	<task:executor id="defaultExcutor" pool-size="3"/>
-	<task:scheduler id="taskScheduler" pool-size="3"/>
+	<task:executor id="defaultExcutor" pool-size="${hx.schedule.executor.pool.size}"/>
+	<task:scheduler id="taskScheduler" pool-size="${hx.schedule.scheduler.pool.size}"/>
 	<task:annotation-driven executor="defaultExcutor" scheduler="taskScheduler"/>
+
+	<bean id="scheduleLogDao" class="org.layz.hx.base.persist.dao.schedule.ScheduleLogDaoImpl"/>
+	<bean id="scheduleLogService" class="org.layz.hx.base.service.schedule.ScheduleLogServiceImpl"/>
+	
 </beans>
