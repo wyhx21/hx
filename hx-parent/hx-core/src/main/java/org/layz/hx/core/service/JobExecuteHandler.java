@@ -1,21 +1,20 @@
 package org.layz.hx.core.service;
 
-import org.layz.hx.base.entity.BaseJobEntity;
 import org.layz.hx.core.pojo.response.JsonResponse;
 
-public interface JobExcuteHandler<T extends BaseJobEntity> {
+public interface JobExecuteHandler {
     /**
      * 业务处理前执行逻辑
-     * @param entity
      */
-    void onBefore(T entity);
+    void onBefore();
 
     /**
      * 定时任务执行
-     * @param entity
+     * @param param1
+     * @param param2
      * @return
      */
-    JsonResponse doTask(T entity);
+    JsonResponse doTask(String param1, String param2);
 
     /**
      * 业务处理后逻辑

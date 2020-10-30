@@ -1,10 +1,11 @@
-package org.layz.hx.persist.service;
+package org.layz.hx.base.service.schedule;
 
-import org.layz.hx.base.entity.BaseJobEntity;
+import org.layz.hx.base.entity.schedule.ScheduleLog;
+import org.layz.hx.persist.service.BaseService;
 
 import java.util.List;
 
-public interface BaseJobService<T extends BaseJobEntity> extends BaseService<T> {
+public interface ScheduleLogService extends BaseService<ScheduleLog> {
     /**
      * 1: 扫描类为 scanTypeName
      * 2：开始执行时间小于当前时间
@@ -28,4 +29,10 @@ public interface BaseJobService<T extends BaseJobEntity> extends BaseService<T> 
      * @param nextJobList
      */
     void updateNextJob(List<Long> nextJobList);
+    /**
+     * 查询定时任务执行的记录
+     * @param processNo
+     * @return
+     */
+    List<ScheduleLog> findByProcessNo(String processNo);
 }

@@ -27,7 +27,6 @@ import javax.annotation.PostConstruct;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.sql.PreparedStatement;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;

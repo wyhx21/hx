@@ -1,11 +1,12 @@
-package org.layz.hx.persist.repository;
+package org.layz.hx.base.persist.dao.schedule;
 
-import org.layz.hx.base.entity.BaseJobEntity;
+import org.layz.hx.base.entity.schedule.ScheduleLog;
+import org.layz.hx.persist.repository.BaseDao;
 
 import java.util.Date;
 import java.util.List;
 
-public interface BaseJobDao<T extends BaseJobEntity> extends BaseDao<T> {
+public interface ScheduleLogDao extends BaseDao<ScheduleLog> {
     /**
      * 执行记录查询
      * @param scanTypeName

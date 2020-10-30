@@ -1,33 +1,33 @@
 package org.layz.hx.core.service;
 
-import org.layz.hx.base.entity.BaseJobEntity;
+import org.layz.hx.base.entity.schedule.ScheduleLog;
 import org.layz.hx.base.type.JobStatusEnum;
 import org.layz.hx.core.pojo.response.JsonResponse;
 
 import java.text.MessageFormat;
 import java.util.Date;
 
-public class JobResultHandlerImpl implements JobResultHandler<BaseJobEntity> {
+public class JobResultHandlerImpl implements JobResultHandler {
 
     @Override
-    public void jobSuccHandle(BaseJobEntity entity, JsonResponse result) {
+    public void jobSuccHandle(ScheduleLog scheduleLog, JsonResponse result) {
         String msg = obtainMsg(result);
-        entity.setHandleResult(msg); // 成功
-        entity.setEndRunTime(new Date());
-        entity.setStatus(JobStatusEnum.HANDLE_SUCCESS.getValue());
-        entity.setLastModifiedDate(new Date());
+        scheduleLog.setHandleResult(msg); // 成功
+        scheduleLog.setEndRunTime(new Date());
+        scheduleLog.setStatus(JobStatusEnum.HANDLE_SUCCESS.getValue());
+        scheduleLog.setLastModifiedDate(new Date());
     }
 
     @Override
-    public void jobFailHandle(BaseJobEntity entity, Object result) {
+    public void jobFailHandle(ScheduleLog scheduleLog, Object result) {
         String msg = obtainMsg(result);
-        handleFailJob(entity,msg);
+        handleFailJob(scheduleLog,msg);
     }
 
     @Override
-    public void jobErrorHandle(BaseJobEntity entity, Throwable e) {
+    public void jobErrorHandle(ScheduleLog scheduleLog, Throwable e) {
         String msg = obtainMsg(e);
-        handleFailJob(entity,msg);
+        handleFailJob(scheduleLog,msg);
     }
 
     /**
@@ -50,16 +50,16 @@ public class JobResultHandlerImpl implements JobResultHandler<BaseJobEntity> {
         return msg;
     }
     /**
-     * @param entity
+     * @param scheduleLog
      * @param msg
      */
-    private void handleFailJob(BaseJobEntity entity, String msg){
-        entity.setHandleResult(msg);
-        entity.setEndRunTime(new Date());
-        entity.setProcessNo(null);
-        int failCount = entity.getFailCount() == null ? 0 :entity.getFailCount();
-        entity.setFailCount(failCount + 1);
-        entity.setStatus(JobStatusEnum.HANDLE_FAIL.getValue());
-        entity.setLastModifiedDate(new Date());
+    private void handleFailJob(ScheduleLog scheduleLog, String msg){
+        scheduleLog.setHandleResult(msg);
+        scheduleLog.setEndRunTime(new Date());
+        scheduleLog.setProcessNo(null);
+        int failCount = scheduleLog.getFailCount() == null ? 0 :scheduleLog.getFailCount();
+        scheduleLog.setFailCount(failCount + 1);
+        scheduleLog.setStatus(JobStatusEnum.HANDLE_FAIL.getValue());
+        scheduleLog.setLastModifiedDate(new Date());
     }
 }

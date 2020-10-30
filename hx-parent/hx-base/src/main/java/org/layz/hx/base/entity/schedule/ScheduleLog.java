@@ -1,12 +1,13 @@
-package org.layz.hx.base.entity;
+package org.layz.hx.base.entity.schedule;
 
 import org.layz.hx.base.annotation.HxColumn;
-import org.layz.hx.base.annotation.HxSupperClass;
+import org.layz.hx.base.annotation.HxTable;
+import org.layz.hx.base.entity.AutoLongBaseEntity;
 
 import java.util.Date;
 
-@HxSupperClass
-public class BaseJobEntity extends AutoLongBaseEntity {
+@HxTable(value = "schedule_log", definition = "DEFAULT CHARSET=utf8 COMMENT='定时任务日志表'")
+public class ScheduleLog extends AutoLongBaseEntity {
     @HxColumn(sort = 1,definition = "bigint(19) COMMENT '父级id'")
     private Long parentJobId;
     @HxColumn(sort = 2,definition = "varchar(128)COMMENT '批次号'")
@@ -27,6 +28,12 @@ public class BaseJobEntity extends AutoLongBaseEntity {
     private Date endRunTime;
     @HxColumn(sort = 10,definition = "varchar(2048) COMMENT '执行结果'")
     private String handleResult;
+    @HxColumn(sort = 11,definition = "varchar(64) COMMENT '参数1'")
+    private String param1;
+    @HxColumn(sort = 12,definition = "varchar(64) COMMENT '参数2'")
+    private String param2;
+    @HxColumn(sort = 13,definition = "varchar(64) COMMENT '备注信息'")
+    private String remark;
 
     public Long getParentJobId() {
         return parentJobId;
@@ -106,5 +113,29 @@ public class BaseJobEntity extends AutoLongBaseEntity {
 
     public void setHandleResult(String handleResult) {
         this.handleResult = handleResult;
+    }
+
+    public String getParam1() {
+        return param1;
+    }
+
+    public void setParam1(String param1) {
+        this.param1 = param1;
+    }
+
+    public String getParam2() {
+        return param2;
+    }
+
+    public void setParam2(String param2) {
+        this.param2 = param2;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

@@ -1,19 +1,23 @@
-package org.layz.hx.persist.repository;
+package org.layz.hx.base.persist.dao.schedule;
 
-import org.layz.hx.base.entity.BaseJobEntity;
+import org.layz.hx.base.entity.schedule.ScheduleLog;
 import org.layz.hx.base.type.JobStatusEnum;
 import org.layz.hx.core.support.HxTableSupport;
+import org.layz.hx.persist.repository.BaseDaoImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
 
-public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> implements BaseJobDao<T>{
+public class ScheduleLogDaoImpl extends BaseDaoImpl<ScheduleLog> implements ScheduleLogDao {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleLogDaoImpl.class);
     private String tableName;
+    @Value("${hx.schedule.log.fail.count:5}")
     private Integer failCount;
-    private static final Logger LOGGER = LoggerFactory.getLogger(BaseJobDaoImpl.class);
 
     @Override
     public int findCountByName(String scanTypeName, Date currentDate) {
@@ -49,12 +53,8 @@ public class BaseJobDaoImpl<T extends BaseJobEntity> extends BaseDaoImpl<T> impl
     }
 
     @Override
-    public void setClazz(Class<T> clazz) {
+    public void setClazz(Class<ScheduleLog> clazz) {
         super.setClazz(clazz);
         this.tableName = HxTableSupport.getTableClassInfo(clazz).getTableName();
-    }
-
-    public void setFailCount(Integer failCount) {
-        this.failCount = failCount;
     }
 }
