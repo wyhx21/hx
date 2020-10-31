@@ -1,7 +1,7 @@
-package org.layz.hx.base.persist.dao.schedule;
+package org.layz.hx.config.persist.dao.schedule;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
 import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.support.HxTableSupport;
 import org.layz.hx.persist.repository.BaseDaoImpl;
 import org.slf4j.Logger;

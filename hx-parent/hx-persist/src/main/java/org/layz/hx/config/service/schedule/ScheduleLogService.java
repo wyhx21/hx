@@ -1,6 +1,6 @@
-package org.layz.hx.base.service.schedule;
+package org.layz.hx.config.service.schedule;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.persist.service.BaseService;
 
 import java.util.List;

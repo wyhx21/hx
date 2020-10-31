@@ -7,11 +7,14 @@
            http://www.springframework.org/schema/task
            http://www.springframework.org/schema/task/spring-task-4.0.xsd">
 	
-	<task:executor id="defaultExcutor" pool-size="${hx.schedule.executor.pool.size}"/>
+	<task:executor id="defaultExecutor" pool-size="${hx.schedule.executor.pool.size}"/>
 	<task:scheduler id="taskScheduler" pool-size="${hx.schedule.scheduler.pool.size}"/>
-	<task:annotation-driven executor="defaultExcutor" scheduler="taskScheduler"/>
+	<task:annotation-driven executor="defaultExecutor" scheduler="taskScheduler"/>
 
-	<bean id="scheduleLogDao" class="org.layz.hx.base.persist.dao.schedule.ScheduleLogDaoImpl"/>
-	<bean id="scheduleLogService" class="org.layz.hx.base.service.schedule.ScheduleLogServiceImpl"/>
-	
+	<bean id="scheduleScanConfig" class="org.layz.hx.config.schedule.ScheduleScanConfig"/>
+
+	<bean id="scheduleLogService" class="org.layz.hx.config.service.schedule.ScheduleLogServiceImpl"/>
+	<bean id="scheduleLogDao" class="org.layz.hx.config.persist.dao.schedule.ScheduleLogDaoImpl"/>
+	<bean id="scheduleScanService" class="org.layz.hx.config.service.schedule.ScheduleScanServiceImpl"/>
+	<bean id="scheduleScanDao" class="org.layz.hx.config.persist.dao.schedule.ScheduleScanDaoImpl"/>
 </beans>

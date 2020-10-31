@@ -1,8 +1,8 @@
-package org.layz.hx.base.config.schedule;
+package org.layz.hx.config.schedule;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
 import org.layz.hx.base.inte.ResponseEnum;
-import org.layz.hx.base.service.schedule.ScheduleLogService;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
+import org.layz.hx.config.service.schedule.ScheduleLogService;
 import org.layz.hx.core.pojo.response.JsonResponse;
 import org.layz.hx.core.service.JobExecuteHandler;
 import org.layz.hx.core.service.JobResultHandler;
@@ -31,16 +31,16 @@ public class JobRunnable implements Runnable {
             LOGGER.debug("handle end, id: {}: code: {}, msg:{}", scheduleLog.getId(), response.getRespCode(), response.getRespMsg());
             if (ResponseEnum.SUCC.equals(response.getSuccess())) {
                 jobResultHandler.jobSuccHandle(scheduleLog, response);
-                scheduleLogService.updateBatch(Collections.singletonList(scheduleLog));
+                scheduleLogService.update(scheduleLog);
             } else {
                 jobResultHandler.jobFailHandle(scheduleLog,response);
-                scheduleLogService.updateBatch(Collections.singletonList(scheduleLog));
+                scheduleLogService.update(scheduleLog);
             }
             scheduleLogService.updateNextJob(Collections.singletonList(scheduleLog.getId()));
         } catch (Exception e) {
             LOGGER.error("run error, serviceName", serviceName, e);
             jobResultHandler.jobErrorHandle(scheduleLog,e);
-            scheduleLogService.updateBatch(Collections.singletonList(scheduleLog));
+            scheduleLogService.update(scheduleLog);
         } finally {
             jobExecuteHandler.onAfter();
         }
@@ -57,4 +57,5 @@ public class JobRunnable implements Runnable {
     public void setJobResultHandler(JobResultHandler jobResultHandler) {
         this.jobResultHandler = jobResultHandler;
     }
+
 }

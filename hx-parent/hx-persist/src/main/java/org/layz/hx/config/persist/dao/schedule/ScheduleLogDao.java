@@ -1,6 +1,6 @@
-package org.layz.hx.base.persist.dao.schedule;
+package org.layz.hx.config.persist.dao.schedule;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.persist.repository.BaseDao;
 
 import java.util.Date;

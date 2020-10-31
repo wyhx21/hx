@@ -1,19 +1,16 @@
-package org.layz.hx.base.config.schedule;
+package org.layz.hx.config.schedule;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
 import org.layz.hx.base.inte.ResponseEnum;
-import org.layz.hx.base.service.schedule.ScheduleLogService;
 import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
+import org.layz.hx.config.service.schedule.ScheduleLogService;
 import org.layz.hx.core.pojo.response.JsonResponse;
 import org.layz.hx.core.service.JobExecuteHandler;
 import org.layz.hx.core.service.JobResultHandler;
-import org.layz.hx.core.service.JobResultHandlerImpl;
 import org.layz.hx.core.util.SnowFlakeUtil;
 import org.layz.hx.spring.util.SpringContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.ArrayList;
@@ -21,19 +18,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public abstract class JobTemplate extends HxSchedulingConfigurer {
+public final class JobTemplate implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobTemplate.class);
-    @Autowired
+    private static Integer SINGLE = 0;
     private ScheduleLogService scheduleLogService;
-    @Autowired(required = false)
-    @Qualifier("taskExecutor")
     private ThreadPoolTaskExecutor taskExecutor;
-
     private JobResultHandler jobResultHandler;
     /**
-     * true 单线程执行 false 多线程执行 default true
+     * 0同步执行1异步执行
      */
-    private boolean singleThread = true;
+    private Integer singleThread = 0;
     /**
      * 该批次处理的最大数据量 default 10
      */
@@ -43,11 +37,19 @@ public abstract class JobTemplate extends HxSchedulingConfigurer {
      */
     private String scanTypeName;
 
+    public void setScheduleLogService(ScheduleLogService scheduleLogService) {
+        this.scheduleLogService = scheduleLogService;
+    }
+
+    public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
+        this.taskExecutor = taskExecutor;
+    }
+
     public void setScanTypeName(String scanTypeName) {
         this.scanTypeName = scanTypeName;
     }
 
-    public void setSingleThread(boolean singleThread) {
+    public void setSingleThread(Integer singleThread) {
         this.singleThread = singleThread;
     }
 
@@ -60,10 +62,18 @@ public abstract class JobTemplate extends HxSchedulingConfigurer {
     }
 
     @Override
-    protected final void execute(){
-        if(null == jobResultHandler) {
-            jobResultHandler = new JobResultHandlerImpl();
+    public final void run() {
+        long begin = System.currentTimeMillis();
+        try {
+            LOGGER.debug("task execute begin...");
+            execute();
+            LOGGER.debug("task execute end, execute time: {}...",System.currentTimeMillis() - begin);
+        } catch (Exception e) {
+            LOGGER.error("task execute error, execute time: {}...",(System.currentTimeMillis() - begin), e);
         }
+    }
+
+    protected void execute(){
         // 扫描系统任务表中是否存在待处理类型的任务数据
         int dataCount = scheduleLogService.findCountByName(scanTypeName);
         LOGGER.debug("dataCount: {}", dataCount);
@@ -71,7 +81,7 @@ public abstract class JobTemplate extends HxSchedulingConfigurer {
             LOGGER.debug("#### scan[{}],no record ####", scanTypeName);
             return;
         }
-        if(singleThread) {
+        if(SINGLE.equals(singleThread)) {
             executeSingle();
         } else {
             executeSync();

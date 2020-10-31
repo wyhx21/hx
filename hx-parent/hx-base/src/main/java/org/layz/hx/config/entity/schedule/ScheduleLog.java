@@ -1,4 +1,4 @@
-package org.layz.hx.base.entity.schedule;
+package org.layz.hx.config.entity.schedule;
 
 import org.layz.hx.base.annotation.HxColumn;
 import org.layz.hx.base.annotation.HxTable;

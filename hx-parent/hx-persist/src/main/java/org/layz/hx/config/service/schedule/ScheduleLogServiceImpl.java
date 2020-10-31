@@ -1,7 +1,9 @@
-package org.layz.hx.base.service.schedule;
+package org.layz.hx.config.service.schedule;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
-import org.layz.hx.base.persist.dao.schedule.ScheduleLogDao;
+import org.layz.hx.base.util.CreateCodeUtil;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
+import org.layz.hx.config.entity.schedule.ScheduleScan;
+import org.layz.hx.config.persist.dao.schedule.ScheduleLogDao;
 import org.layz.hx.persist.repository.BaseDao;
 import org.layz.hx.persist.service.BaseServiceImpl;
 import org.slf4j.Logger;
@@ -15,9 +17,12 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ScheduleLogServiceImpl extends BaseServiceImpl<ScheduleLog> implements ScheduleLogService  {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleLogServiceImpl.class);
+
     @Autowired
     private ScheduleLogDao scheduleLogDao;
+
     @Override
     public BaseDao<ScheduleLog> getBaseDao() {
         return scheduleLogDao;

@@ -1,7 +1,7 @@
 package org.layz.hx.core.service;
 
-import org.layz.hx.base.entity.schedule.ScheduleLog;
 import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.pojo.response.JsonResponse;
 
 import java.text.MessageFormat;
