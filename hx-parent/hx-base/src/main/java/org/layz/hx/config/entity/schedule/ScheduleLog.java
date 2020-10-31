@@ -16,7 +16,7 @@ public class ScheduleLog extends AutoLongBaseEntity {
     private String scanTypeName;
     @HxColumn(sort = 4,definition = "varchar(32) COMMENT '执行类'")
     private String jobService;
-    @HxColumn(sort = 5,definition = "tinyint(2) DEFAULT NULL COMMENT 'JobStatusEnum 状态 0:待启动任务,1:待处理,2:处理中,3:处理失败,4:处理成功'")
+    @HxColumn(sort = 5,definition = "tinyint(2) DEFAULT NULL COMMENT 'ScheduleStatusEnum 状态 0:待启动任务,1:待处理,2:处理中,3:处理失败,4:处理成功'")
     private Integer status;
     @HxColumn(sort = 6,definition = "tinyint(2) DEFAULT '0' COMMENT '失败次数'")
     private Integer failCount;

@@ -1,7 +1,7 @@
 package org.layz.hx.persist.complete;
 
 import org.layz.hx.base.inte.entity.Complete;
-import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 
 import java.util.Date;
@@ -17,7 +17,7 @@ public class ScheduleLogComplete implements Complete {
         ScheduleLog entity = (ScheduleLog) obj;
         Integer status = entity.getStatus();
         if(null == status) {
-            entity.setStatus(JobStatusEnum.WAITE_HANDLE.getValue());
+            entity.setStatus(ScheduleStatusEnum.WAITE_HANDLE.getValue());
         }
         Integer failCount = entity.getFailCount();
         if(null == failCount) {

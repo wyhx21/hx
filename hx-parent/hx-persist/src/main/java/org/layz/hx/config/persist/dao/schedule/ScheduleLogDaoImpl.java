@@ -1,6 +1,6 @@
 package org.layz.hx.config.persist.dao.schedule;
 
-import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.support.HxTableSupport;
 import org.layz.hx.persist.repository.BaseDaoImpl;
@@ -23,8 +23,8 @@ public class ScheduleLogDaoImpl extends BaseDaoImpl<ScheduleLog> implements Sche
     public int findCountByName(String scanTypeName, Date currentDate) {
         LOGGER.debug("scanTypeName:{}", scanTypeName);
         String sql = "select count(0) from " + tableName + " where scanTypeName = ? and (`status` = ? or (`status` = ? and failCount < ?)) and beginRunTime <= ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, scanTypeName, JobStatusEnum.WAITE_HANDLE.getValue(),
-                JobStatusEnum.HANDLE_FAIL.getValue(), failCount,currentDate);
+        int count = jdbcTemplate.queryForObject(sql, Integer.class, scanTypeName, ScheduleStatusEnum.WAITE_HANDLE.getValue(),
+                ScheduleStatusEnum.HANDLE_FAIL.getValue(), failCount,currentDate);
         return count;
     }
 
@@ -32,8 +32,8 @@ public class ScheduleLogDaoImpl extends BaseDaoImpl<ScheduleLog> implements Sche
     public int updateProcessNo(String processNo, String scanTypeName, Integer taskLoopCount, Date currentDate) {
         LOGGER.debug("scanTypeName: {},taskLoopCount: {},processNo: {}", scanTypeName, taskLoopCount, processNo);
         String sql = "update " + tableName + " set processNo = ?,`status` = ?,lastModifiedDate = ? where scanTypeName = ? and (`status` = ? or (`status` = ? and failCount < ?)) and beginRunTime <= ? LIMIT ?";
-        return jdbcTemplate.update(sql, processNo, JobStatusEnum.HANDING.getValue(), currentDate, scanTypeName, JobStatusEnum.WAITE_HANDLE.getValue(),
-                JobStatusEnum.HANDLE_FAIL.getValue(), failCount, currentDate, taskLoopCount);
+        return jdbcTemplate.update(sql, processNo, ScheduleStatusEnum.HANDING.getValue(), currentDate, scanTypeName, ScheduleStatusEnum.WAITE_HANDLE.getValue(),
+                ScheduleStatusEnum.HANDLE_FAIL.getValue(), failCount, currentDate, taskLoopCount);
     }
 
     @Override
@@ -45,10 +45,10 @@ public class ScheduleLogDaoImpl extends BaseDaoImpl<ScheduleLog> implements Sche
         }
         String sql = "update " + tableName + " set `status` = ?,lastModifiedDate = ? where parentJobId = ? and `status` = ?";
         jdbcTemplate.batchUpdate(sql, nextJobList,super.batchSize, (ps, argument) -> {
-            ps.setInt(1,JobStatusEnum.WAITE_START.getValue());
+            ps.setInt(1,ScheduleStatusEnum.WAITE_START.getValue());
             ps.setDate(2, new java.sql.Date(System.currentTimeMillis()));
             ps.setLong(3, argument);
-            ps.setInt(4, JobStatusEnum.WAITE_HANDLE.getValue());
+            ps.setInt(4, ScheduleStatusEnum.WAITE_HANDLE.getValue());
         });
     }
 

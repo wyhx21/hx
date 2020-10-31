@@ -1,7 +1,7 @@
 package org.layz.hx.config.schedule;
 
 import org.layz.hx.base.inte.ResponseEnum;
-import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.config.service.schedule.ScheduleLogService;
 import org.layz.hx.core.pojo.response.JsonResponse;
@@ -111,7 +111,7 @@ public final class JobTemplate implements Runnable {
                 if (taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity() == 0) {
                     scheduleLog.setProcessNo(null);
                     scheduleLog.setEndRunTime(new Date());
-                    scheduleLog.setStatus(JobStatusEnum.WAITE_HANDLE.getValue());
+                    scheduleLog.setStatus(ScheduleStatusEnum.WAITE_HANDLE.getValue());
                     scheduleLog.setLastModifiedDate(new Date());
                     scheduleLog.setLastModifiedDate(new Date());
                     scheduleLogService.updateBatch(Collections.singletonList(scheduleLog));

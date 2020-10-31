@@ -2,7 +2,7 @@ package org.layz.hx.base.type;
 
 import org.layz.hx.base.inte.TypeEnum;
 
-public enum JobStatusEnum implements TypeEnum {
+public enum ScheduleStatusEnum implements TypeEnum {
     WAITE_START(0,"待启动任务"),
     WAITE_HANDLE(1,"待处理"),
     HANDING(2,"处理中"),
@@ -12,7 +12,7 @@ public enum JobStatusEnum implements TypeEnum {
     private Integer value;
     private String name;
 
-    JobStatusEnum(Integer value,String name) {
+    ScheduleStatusEnum(Integer value,String name) {
         this.value = value;
         this.name = name;
     }

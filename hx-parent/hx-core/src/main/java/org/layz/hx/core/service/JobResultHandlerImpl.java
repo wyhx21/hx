@@ -1,6 +1,6 @@
 package org.layz.hx.core.service;
 
-import org.layz.hx.base.type.JobStatusEnum;
+import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.pojo.response.JsonResponse;
 
@@ -14,7 +14,7 @@ public class JobResultHandlerImpl implements JobResultHandler {
         String msg = obtainMsg(result);
         scheduleLog.setHandleResult(msg); // 成功
         scheduleLog.setEndRunTime(new Date());
-        scheduleLog.setStatus(JobStatusEnum.HANDLE_SUCCESS.getValue());
+        scheduleLog.setStatus(ScheduleStatusEnum.HANDLE_SUCCESS.getValue());
         scheduleLog.setLastModifiedDate(new Date());
     }
 
@@ -59,7 +59,7 @@ public class JobResultHandlerImpl implements JobResultHandler {
         scheduleLog.setProcessNo(null);
         int failCount = scheduleLog.getFailCount() == null ? 0 :scheduleLog.getFailCount();
         scheduleLog.setFailCount(failCount + 1);
-        scheduleLog.setStatus(JobStatusEnum.HANDLE_FAIL.getValue());
+        scheduleLog.setStatus(ScheduleStatusEnum.HANDLE_FAIL.getValue());
         scheduleLog.setLastModifiedDate(new Date());
     }
 }
