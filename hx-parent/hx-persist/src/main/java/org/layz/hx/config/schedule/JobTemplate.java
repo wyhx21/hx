@@ -139,19 +139,26 @@ public final class JobTemplate implements Runnable {
             List<ScheduleLog> errorList = new ArrayList<>(); // 用来保存生成文件时失败的数据
             List<ScheduleLog> successList = new ArrayList<>(); // 保持成功生成的数据
             List<Long> nextTaskList = new ArrayList<>(); // 保持下一个处理
-            String taskServiceName; // 任务处理类名称
+            String serviceName; // 任务处理类名称
             for (ScheduleLog scheduleLog : processList) {
                 JobExecuteHandler jobExecuteHandler = null;
+                serviceName = scheduleLog.getJobService();
+                Long id = scheduleLog.getId();
+                String param1 = scheduleLog.getParam1();
+                String param2 = scheduleLog.getParam2();
+                String remark = scheduleLog.getRemark();
+                long begin = System.currentTimeMillis();
                 try {
                     // 获取具体要处理的业务类
-                    taskServiceName = scheduleLog.getJobService();
                     scheduleLog.setStartRunTime(new Date());
                     // 根据处理类获取具体业务实现类
-                    jobExecuteHandler = SpringContextUtil.getBean(taskServiceName);
+                    jobExecuteHandler = SpringContextUtil.getBean(serviceName);
+                    LOGGER.info("{} execute begin, param1: {}: param2: {}, remark:{}, id:{}", serviceName, param1, param2, remark, id);
                     // 业务处理前
                     jobExecuteHandler.onBefore();
                     // 具体业务调用的逻辑处理
-                    JsonResponse response = jobExecuteHandler.doTask(scheduleLog.getParam1(), scheduleLog.getParam2());
+                    JsonResponse response = jobExecuteHandler.doTask(param1, param2);
+                    LOGGER.info("{} execute end, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin));
                     if (ResponseEnum.SUCC.equals(response.getSuccess())) {
                         jobResultHandler.jobSuccHandle(scheduleLog, response);
                         successList.add(scheduleLog);
@@ -161,7 +168,7 @@ public final class JobTemplate implements Runnable {
                         errorList.add(scheduleLog);
                     }
                 } catch (Throwable e) {
-                    LOGGER.error("run error, serviceName", scheduleLog.getJobService(), e);
+                    LOGGER.error("{} execute error, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin), e);
                     jobResultHandler.jobErrorHandle(scheduleLog, e);
                     errorList.add(scheduleLog);
                 } finally {

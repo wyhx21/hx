@@ -23,12 +23,17 @@ public class JobRunnable implements Runnable {
     public void run() {
         String serviceName = this.scheduleLog.getJobService();
         JobExecuteHandler jobExecuteHandler = SpringContextUtil.getBean(serviceName);
+        Long id = scheduleLog.getId();
+        String param1 = scheduleLog.getParam1();
+        String param2 = scheduleLog.getParam2();
+        String remark = scheduleLog.getRemark();
+        long begin = System.currentTimeMillis();
+        LOGGER.info("{} execute begin, param1: {}: param2: {}, remark:{}, id:{}", serviceName, param1, param2, remark, id);
         try {
             scheduleLog.setStartRunTime(new Date());
             jobExecuteHandler.onBefore();
-
-            JsonResponse response = jobExecuteHandler.doTask(this.scheduleLog.getParam1(), this.scheduleLog.getParam2());
-            LOGGER.debug("handle end, id: {}: code: {}, msg:{}", scheduleLog.getId(), response.getRespCode(), response.getRespMsg());
+            JsonResponse response = jobExecuteHandler.doTask(param1, param2);
+            LOGGER.info("{} execute end, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin));
             if (ResponseEnum.SUCC.equals(response.getSuccess())) {
                 jobResultHandler.jobSuccHandle(scheduleLog, response);
                 scheduleLogService.update(scheduleLog);
@@ -38,7 +43,7 @@ public class JobRunnable implements Runnable {
             }
             scheduleLogService.updateNextJob(Collections.singletonList(scheduleLog.getId()));
         } catch (Exception e) {
-            LOGGER.error("run error, serviceName", serviceName, e);
+            LOGGER.error("{} execute error, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin), e);
             jobResultHandler.jobErrorHandle(scheduleLog,e);
             scheduleLogService.update(scheduleLog);
         } finally {
