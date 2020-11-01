@@ -1,7 +1,7 @@
 package org.layz.hx.spring.mvc.filter;
 
 import org.layz.hx.core.util.RequestUtil;
-import org.layz.hx.core.util.factory.RequestInfoFactory;
+import org.layz.hx.core.util.factory.RequestWrapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +25,7 @@ public class RequestContextFilter implements Filter {
             LOGGER.info("sessionTimeOut error, value is: {}", value);
             sessionTimeOut = 30L;
         }
-        RequestInfoFactory.init(type, sessionTimeOut);
+        RequestWrapperFactory.init(type, sessionTimeOut);
     }
 
     @Override

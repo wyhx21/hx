@@ -1,4 +1,4 @@
-package org.layz.hx.core.util.requestInfo;
+package org.layz.hx.core.util.request;
 
 import org.layz.hx.base.inte.BaseLoginInfo;
 import org.layz.hx.core.support.RequestContext;
