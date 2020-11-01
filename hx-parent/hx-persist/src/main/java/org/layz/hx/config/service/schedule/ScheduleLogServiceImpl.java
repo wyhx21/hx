@@ -49,6 +49,13 @@ public class ScheduleLogServiceImpl extends BaseServiceImpl<ScheduleLog> impleme
     }
 
     @Override
+    @Transactional
+    public void updateNextJob(Long logId) {
+        LOGGER.debug("logId:{}", logId);
+        scheduleLogDao.updateNextJob(logId);
+    }
+
+    @Override
     public List<ScheduleLog> findByProcessNo(String processNo) {
         LOGGER.debug("processLog: {}", processNo);
         ScheduleLog scheduleLog = new ScheduleLog();

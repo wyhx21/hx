@@ -21,4 +21,10 @@ public interface ScheduleLogDao extends BaseDao<ScheduleLog> {
      * @param nextJobList
      */
     void updateNextJob(List<Long> nextJobList);
+
+    /**
+     * 更新下一个批次号
+     * @param logId
+     */
+    void updateNextJob(Long logId);
 }

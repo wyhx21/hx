@@ -44,6 +44,16 @@ public class ScheduleLogDaoImpl extends BaseDaoImpl<ScheduleLog> implements Sche
     }
 
     @Override
+    public void updateNextJob(Long logId) {
+        LOGGER.debug("logId:{}", logId);
+        if(null == logId) {
+            return;
+        }
+        String sql = "update " + tableName + " set `status` = ?,lastModifiedDate = ? where parentJobId = ? and `status` = ?";
+        jdbcTemplate.update(sql, ScheduleStatusEnum.WAITE_START.getValue(), new Date(), logId, ScheduleStatusEnum.WAITE_HANDLE.getValue());
+    }
+
+    @Override
     public void setClazz(Class<ScheduleLog> clazz) {
         super.setClazz(clazz);
         this.tableName = HxTableSupport.getTableClassInfo(clazz).getTableName();

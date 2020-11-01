@@ -10,7 +10,6 @@ import org.layz.hx.spring.util.SpringContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.Date;
 
 public class JobRunnable implements Runnable {
@@ -41,7 +40,7 @@ public class JobRunnable implements Runnable {
                 jobResultHandler.jobFailHandle(scheduleLog,response);
                 this.scheduleLogWrapper.update(scheduleLog);
             }
-            this.scheduleLogWrapper.updateNextJob(Collections.singletonList(scheduleLog.getId()));
+            this.scheduleLogWrapper.updateNextJob(scheduleLog.getId());
         } catch (Exception e) {
             LOGGER.error("{} execute error, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin), e);
             jobResultHandler.jobErrorHandle(scheduleLog,e);
