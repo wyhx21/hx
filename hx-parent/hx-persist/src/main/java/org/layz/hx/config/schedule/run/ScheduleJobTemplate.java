@@ -78,32 +78,28 @@ public abstract class ScheduleJobTemplate implements Runnable{
      *异步执行
      */
     private void executeAsync(List<ScheduleLog> list) {
-        try {
-            LOGGER.debug("executeSync start");
-            for (ScheduleLog scheduleLog : list) {
-                scheduleLog.setLastModifiedBy(lastModifiedBy);
-                JobRunnable runnable = new JobRunnable();
-                runnable.setScheduleLogWrapper(this.scheduleLogWrapper);
-                runnable.setScheduleLog(scheduleLog);
-                runnable.setJobResultHandler(jobResultHandler);
-                if(null == taskExecutor) {
-                    LOGGER.debug("taskExecutor is not exsist, class: {}", ThreadPoolTaskExecutor.class);
-                    return;
-                }
-                if (taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity() == 0) {
-                    scheduleLog.setProcessNo(null);
-                    scheduleLog.setEndRunTime(new Date());
-                    scheduleLog.setStatus(ScheduleStatusEnum.WAITE_HANDLE.getValue());
-                    scheduleLog.setLastModifiedDate(new Date());
-                    scheduleLog.setLastModifiedDate(new Date());
-                    this.scheduleLogWrapper.updateBatch(Collections.singletonList(scheduleLog));
-                    continue;
-                } else {
-                    taskExecutor.execute(runnable);
-                }
+        LOGGER.debug("executeAsync start");
+        for (ScheduleLog scheduleLog : list) {
+            scheduleLog.setLastModifiedBy(lastModifiedBy);
+            JobRunnable runnable = new JobRunnable();
+            runnable.setScheduleLogWrapper(this.scheduleLogWrapper);
+            runnable.setScheduleLog(scheduleLog);
+            runnable.setJobResultHandler(jobResultHandler);
+            if(null == taskExecutor) {
+                LOGGER.debug("taskExecutor is not exsist, class: {}", ThreadPoolTaskExecutor.class);
+                return;
             }
-        } catch (Throwable e) {
-            LOGGER.error("#### systemTask handle error [{}] ####", scanTypeName, e);
+            if (taskExecutor.getThreadPoolExecutor().getQueue().remainingCapacity() == 0) {
+                scheduleLog.setProcessNo(null);
+                scheduleLog.setEndRunTime(new Date());
+                scheduleLog.setStatus(ScheduleStatusEnum.WAITE_HANDLE.getValue());
+                scheduleLog.setLastModifiedDate(new Date());
+                scheduleLog.setLastModifiedDate(new Date());
+                this.scheduleLogWrapper.updateBatch(Collections.singletonList(scheduleLog));
+                continue;
+            } else {
+                taskExecutor.execute(runnable);
+            }
         }
     }
 
@@ -111,63 +107,59 @@ public abstract class ScheduleJobTemplate implements Runnable{
      * 同步执行
      */
     private void executeSynchronized(List<ScheduleLog> list) {
-        LOGGER.debug("excuteSingleJob start");
-        try {
-            List<ScheduleLog> errorList = new ArrayList<>(); // 用来保存生成文件时失败的数据
-            List<ScheduleLog> successList = new ArrayList<>(); // 保持成功生成的数据
-            List<Long> nextTaskList = new ArrayList<>(); // 保持下一个处理
-            String serviceName; // 任务处理类名称
-            for (ScheduleLog scheduleLog : list) {
-                scheduleLog.setLastModifiedBy(lastModifiedBy);
-                JobExecuteHandler jobExecuteHandler = null;
-                serviceName = scheduleLog.getJobService();
-                Long id = scheduleLog.getId();
-                String param1 = scheduleLog.getParam1();
-                String param2 = scheduleLog.getParam2();
-                String remark = scheduleLog.getRemark();
-                long begin = System.currentTimeMillis();
-                try {
-                    // 获取具体要处理的业务类
-                    scheduleLog.setStartRunTime(new Date());
-                    // 根据处理类获取具体业务实现类
-                    jobExecuteHandler = SpringContextUtil.getBean(serviceName);
-                    LOGGER.info("{} execute begin, param1: {}: param2: {}, remark:{}, id:{}", serviceName, param1, param2, remark, id);
-                    // 业务处理前
-                    jobExecuteHandler.onBefore();
-                    // 具体业务调用的逻辑处理
-                    JsonResponse response = jobExecuteHandler.doTask(param1, param2);
-                    LOGGER.info("{} execute end, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin));
-                    if (ResponseEnum.SUCC.equals(response.getSuccess())) {
-                        jobResultHandler.jobSuccHandle(scheduleLog, response);
-                        successList.add(scheduleLog);
-                        nextTaskList.add(scheduleLog.getId());
-                    } else {
-                        jobResultHandler.jobFailHandle(scheduleLog, response);
-                        errorList.add(scheduleLog);
-                    }
-                } catch (Throwable e) {
-                    LOGGER.error("{} execute error, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin), e);
-                    jobResultHandler.jobErrorHandle(scheduleLog, e);
+        LOGGER.debug("executeSynchronized start");
+        List<ScheduleLog> errorList = new ArrayList<>(); // 用来保存生成文件时失败的数据
+        List<ScheduleLog> successList = new ArrayList<>(); // 保持成功生成的数据
+        List<Long> nextTaskList = new ArrayList<>(); // 保持下一个处理
+        String serviceName; // 任务处理类名称
+        for (ScheduleLog scheduleLog : list) {
+            scheduleLog.setLastModifiedBy(lastModifiedBy);
+            JobExecuteHandler jobExecuteHandler = null;
+            serviceName = scheduleLog.getJobService();
+            Long id = scheduleLog.getId();
+            String param1 = scheduleLog.getParam1();
+            String param2 = scheduleLog.getParam2();
+            String remark = scheduleLog.getRemark();
+            long begin = System.currentTimeMillis();
+            try {
+                // 获取具体要处理的业务类
+                scheduleLog.setStartRunTime(new Date());
+                // 根据处理类获取具体业务实现类
+                jobExecuteHandler = SpringContextUtil.getBean(serviceName);
+                LOGGER.info("{} execute begin, param1: {}: param2: {}, remark:{}, id:{}", serviceName, param1, param2, remark, id);
+                // 业务处理前
+                jobExecuteHandler.onBefore();
+                // 具体业务调用的逻辑处理
+                JsonResponse response = jobExecuteHandler.doTask(param1, param2);
+                LOGGER.info("{} execute end, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin));
+                if (ResponseEnum.SUCC.equals(response.getSuccess())) {
+                    jobResultHandler.jobSuccHandle(scheduleLog, response);
+                    successList.add(scheduleLog);
+                    nextTaskList.add(scheduleLog.getId());
+                } else {
+                    jobResultHandler.jobFailHandle(scheduleLog, response);
                     errorList.add(scheduleLog);
-                } finally {
-                    if (null != jobExecuteHandler) {
-                        jobExecuteHandler.onAfter();
-                    }
+                }
+            } catch (Throwable e) {
+                LOGGER.error("{} execute error, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin), e);
+                jobResultHandler.jobErrorHandle(scheduleLog, e);
+                errorList.add(scheduleLog);
+            } finally {
+                if (null != jobExecuteHandler) {
+                    jobExecuteHandler.onAfter();
                 }
             }
-            // 如果批次数据中存在处理异常的数据
-            if (null != errorList && !errorList.isEmpty()) {
-                this.scheduleLogWrapper.updateBatch(errorList);
-            }
-            // 处理成功的数据
-            if (null != successList && !successList.isEmpty()) {
-                this.scheduleLogWrapper.updateBatch(successList);
-            }
-            if(null != nextTaskList && !nextTaskList.isEmpty()) {
-                this.scheduleLogWrapper.updateNextJob(nextTaskList);
-            }
-        } catch (Throwable e) {
-            LOGGER.error("#### systemTask handle error [{}] ####", scanTypeName, e);
+        }
+        // 如果批次数据中存在处理异常的数据
+        if (null != errorList && !errorList.isEmpty()) {
+            this.scheduleLogWrapper.updateBatch(errorList);
+        }
+        // 处理成功的数据
+        if (null != successList && !successList.isEmpty()) {
+            this.scheduleLogWrapper.updateBatch(successList);
+        }
+        if(null != nextTaskList && !nextTaskList.isEmpty()) {
+            this.scheduleLogWrapper.updateNextJob(nextTaskList);
         }
     }
 
