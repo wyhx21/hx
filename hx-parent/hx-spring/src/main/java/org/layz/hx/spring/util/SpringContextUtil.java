@@ -3,12 +3,12 @@ package org.layz.hx.spring.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
-public class SpringContextUtil implements BeanFactoryAware {
+public class SpringContextUtil implements ApplicationContextAware {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SpringContextUtil.class);
-	private static BeanFactory beanFactory;
+	private static ApplicationContext applicationContext;
 
 	/**
 	 * _获取Spring容器对象
@@ -16,7 +16,7 @@ public class SpringContextUtil implements BeanFactoryAware {
 	 * @return
 	 */
 	public static<T> T getBean(String name){
-		if(null == beanFactory) {
+		if(null == applicationContext) {
 			LOGGER.debug("beanFactory is null");
 			return null;
 		}
@@ -25,7 +25,7 @@ public class SpringContextUtil implements BeanFactoryAware {
 			return null;
 		}
 		try {
-			return (T) beanFactory.getBean(name);
+			return (T) applicationContext.getBean(name);
 		} catch (Throwable e) {
 			LOGGER.debug("bean is not exsist, name: {}", name);
 			return null;
@@ -38,7 +38,7 @@ public class SpringContextUtil implements BeanFactoryAware {
 	 * @return
 	 */
 	public static<T> T getBean(Class<T> clazz){
-		if(null == beanFactory) {
+		if(null == applicationContext) {
 			LOGGER.debug("beanFactory is null");
 			return null;
 		}
@@ -47,7 +47,7 @@ public class SpringContextUtil implements BeanFactoryAware {
 			return null;
 		}
 		try {
-			return beanFactory.getBean(clazz);
+			return applicationContext.getBean(clazz);
 		} catch (Throwable e) {
 			LOGGER.debug("bean is not exsist, class: {}", clazz);
 			return null;
@@ -55,7 +55,7 @@ public class SpringContextUtil implements BeanFactoryAware {
 	}
 
 	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		SpringContextUtil.beanFactory = beanFactory;
+	public void setApplicationContext(ApplicationContext context) throws BeansException {
+		applicationContext = context;
 	}
 }
