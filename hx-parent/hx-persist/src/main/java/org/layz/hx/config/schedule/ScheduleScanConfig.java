@@ -2,8 +2,9 @@ package org.layz.hx.config.schedule;
 
 import org.layz.hx.base.type.DeletedEnum;
 import org.layz.hx.config.entity.schedule.ScheduleScan;
+import org.layz.hx.config.schedule.run.ScheduleScanJobTemplate;
 import org.layz.hx.config.service.schedule.ScheduleScanService;
-import org.layz.hx.core.service.JobResultHandlerImpl;
+import org.layz.hx.core.util.factory.JobResultHandlerFactory;
 import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 
@@ -30,8 +30,9 @@ public final class ScheduleScanConfig implements SchedulingConfigurer {
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         List<ScheduleScan> list = findEnable();
-        if(CollectionUtils.isEmpty(list)) {
-            LOGGER.info("configure is empty");
+        if(null == list || list.isEmpty()) {
+            LOGGER.info("scan configure is empty");
+            return;
         }
         for (ScheduleScan scan : list) {
             Runnable runnable = getRunnable(scan);
@@ -44,10 +45,15 @@ public final class ScheduleScanConfig implements SchedulingConfigurer {
      * @return
      */
     private List<ScheduleScan> findEnable(){
-        LOGGER.debug("find configure");
-        ScheduleScan param = new ScheduleScan();
-        param.setDeleted(DeletedEnum.ENABLE.getValue());
-        return scheduleScanService.findByEntity(param);
+        try {
+            LOGGER.debug("find configure");
+            ScheduleScan param = new ScheduleScan();
+            param.setDeleted(DeletedEnum.ENABLE.getValue());
+            return scheduleScanService.findByEntity(param);
+        } catch (Exception e) {
+            LOGGER.error("find configure error", e);
+            return null;
+        }
     }
 
     /**
@@ -60,13 +66,14 @@ public final class ScheduleScanConfig implements SchedulingConfigurer {
         String cron = scan.getCron();
         String remark = scan.getRemark();
         Integer single = scan.getSingle();
-        JobTemplate template = new JobTemplate();
+        ScheduleScanJobTemplate template = new ScheduleScanJobTemplate();
         template.setScheduleLogWrapper(this.scheduleLogWrapper);
         template.setTaskExecutor(this.taskExecutor);
-        template.setJobResultHandler(new JobResultHandlerImpl());
+        template.setJobResultHandler(JobResultHandlerFactory.getHandler());
         template.setScanTypeName(scanTypeName);
         template.setSingleThread(single);
         template.setTaskLoopCount(scan.getTaskLoopCount());
+        template.setLastModifiedBy(scan.getCreatedBy());
         LOGGER.info("ScheduleScanConfig:\n\tscanTypeName: {}\n\tcron: {}\n\tsingle: {}\n\tremark: {}",
                 scanTypeName,cron,single,remark);
         return template;

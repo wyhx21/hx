@@ -21,4 +21,10 @@ public interface ScheduleLogService extends BaseService<ScheduleLog>, ScheduleLo
      */
     @Override
     void updateBatch(List<ScheduleLog> list);
+
+    @Override
+    void persistBatch(List<ScheduleLog> list);
+
+    @Override
+    Integer persistEntity(ScheduleLog scheduleLog);
 }

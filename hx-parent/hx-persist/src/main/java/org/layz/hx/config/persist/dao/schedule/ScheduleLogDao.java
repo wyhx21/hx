@@ -8,14 +8,6 @@ import java.util.List;
 
 public interface ScheduleLogDao extends BaseDao<ScheduleLog> {
     /**
-     * 执行记录查询
-     * @param scanTypeName
-     * @param currentDate
-     * @return
-     */
-    int findCountByName(String scanTypeName, Date currentDate);
-
-    /**
      * 更新批次号
      * @param processNo
      * @param scanTypeName

@@ -1,4 +1,4 @@
-package org.layz.hx.core.service;
+package org.layz.hx.core.support.schedule;
 
 import org.layz.hx.core.pojo.response.JsonResponse;
 
@@ -12,9 +12,10 @@ public interface JobExecuteHandler {
      * 定时任务执行
      * @param param1
      * @param param2
+     * @throws Exception
      * @return
      */
-    JsonResponse doTask(String param1, String param2);
+    JsonResponse doTask(String param1, String param2) throws Exception;
 
     /**
      * 业务处理后逻辑

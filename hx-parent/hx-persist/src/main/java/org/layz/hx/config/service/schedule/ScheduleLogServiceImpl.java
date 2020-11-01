@@ -29,14 +29,6 @@ public class ScheduleLogServiceImpl extends BaseServiceImpl<ScheduleLog> impleme
     }
 
     @Override
-    public int findCountByName(String scanTypeName) {
-        LOGGER.debug("scanTypeName: {}", scanTypeName);
-        int count = scheduleLogDao.findCountByName(scanTypeName,new Date());
-        LOGGER.debug("count:{}", count);
-        return count;
-    }
-
-    @Override
     @Transactional
     public int updateProcessNo(String processNo, String scanTypeName, Integer taskLoopCount) {
         LOGGER.debug("scanTypeName: {},taskLoopCount: {},processNo: {}", scanTypeName, taskLoopCount, processNo);

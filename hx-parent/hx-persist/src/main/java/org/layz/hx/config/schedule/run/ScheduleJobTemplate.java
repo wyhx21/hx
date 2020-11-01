@@ -1,12 +1,11 @@
-package org.layz.hx.config.schedule;
+package org.layz.hx.config.schedule.run;
 
 import org.layz.hx.base.inte.ResponseEnum;
 import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.pojo.response.JsonResponse;
-import org.layz.hx.core.service.JobExecuteHandler;
-import org.layz.hx.core.service.JobResultHandler;
-import org.layz.hx.core.util.SnowFlakeUtil;
+import org.layz.hx.core.support.schedule.JobExecuteHandler;
+import org.layz.hx.core.support.schedule.JobResultHandler;
 import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.layz.hx.spring.util.SpringContextUtil;
 import org.slf4j.Logger;
@@ -18,24 +17,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public final class JobTemplate implements Runnable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(JobTemplate.class);
+public abstract class ScheduleJobTemplate implements Runnable{
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleJobTemplate.class);
     private static Integer SINGLE = 0;
-    private ScheduleLogWrapper scheduleLogWrapper;
     private ThreadPoolTaskExecutor taskExecutor;
     private JobResultHandler jobResultHandler;
-    /**
-     * 0同步执行1异步执行
-     */
     private Integer singleThread = 0;
+    protected ScheduleLogWrapper scheduleLogWrapper;
+    protected Long lastModifiedBy;
     /**
-     * 该批次处理的最大数据量 default 10
+     * 扫描类
      */
-    private Integer taskLoopCount = 10;
-    /**
-     * 扫描累
-     */
-    private String scanTypeName;
+    protected String scanTypeName;
 
     public void setScheduleLogWrapper(ScheduleLogWrapper scheduleLogWrapper) {
         this.scheduleLogWrapper = scheduleLogWrapper;
@@ -45,20 +38,20 @@ public final class JobTemplate implements Runnable {
         this.taskExecutor = taskExecutor;
     }
 
-    public void setScanTypeName(String scanTypeName) {
-        this.scanTypeName = scanTypeName;
+    public void setJobResultHandler(JobResultHandler jobResultHandler) {
+        this.jobResultHandler = jobResultHandler;
     }
 
     public void setSingleThread(Integer singleThread) {
         this.singleThread = singleThread;
     }
 
-    public void setTaskLoopCount(Integer taskLoopCount) {
-        this.taskLoopCount = taskLoopCount;
+    public void setScanTypeName(String scanTypeName) {
+        this.scanTypeName = scanTypeName;
     }
 
-    public void setJobResultHandler(JobResultHandler jobResultHandler) {
-        this.jobResultHandler = jobResultHandler;
+    public void setLastModifiedBy(Long lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
     }
 
     @Override
@@ -66,40 +59,29 @@ public final class JobTemplate implements Runnable {
         long begin = System.currentTimeMillis();
         try {
             LOGGER.debug("task execute begin...");
-            execute();
+            List<ScheduleLog> list = onBefore();
+            if(null == list || list.isEmpty()) {
+                return;
+            }
+            if(SINGLE.equals(singleThread)) {
+                executeSynchronized(list);
+            } else {
+                executeAsync(list);
+            }
             LOGGER.debug("task execute end, execute time: {}...",System.currentTimeMillis() - begin);
         } catch (Exception e) {
             LOGGER.error("task execute error, execute time: {}...",(System.currentTimeMillis() - begin), e);
         }
     }
 
-    protected void execute(){
-        // 扫描系统任务表中是否存在待处理类型的任务数据
-        int dataCount = this.scheduleLogWrapper.findCountByName(scanTypeName);
-        LOGGER.debug("dataCount: {}", dataCount);
-        if (0 == dataCount) {
-            LOGGER.debug("#### scan[{}],no record ####", scanTypeName);
-            return;
-        }
-        if(SINGLE.equals(singleThread)) {
-            executeSingle();
-        } else {
-            executeSync();
-        }
-    }
-
     /**
-     * 多线程执行
+     *异步执行
      */
-    private final void executeSync() {
-        LOGGER.debug("executeSync start");
+    private void executeAsync(List<ScheduleLog> list) {
         try {
-            List<ScheduleLog> processList = obtainTaskList();
-            if(null == processList || processList.isEmpty()) {
-                LOGGER.debug("#### scan[{}],no record ####", scanTypeName);
-                return;
-            }
-            for (ScheduleLog scheduleLog : processList) {
+            LOGGER.debug("executeSync start");
+            for (ScheduleLog scheduleLog : list) {
+                scheduleLog.setLastModifiedBy(lastModifiedBy);
                 JobRunnable runnable = new JobRunnable();
                 runnable.setScheduleLogWrapper(this.scheduleLogWrapper);
                 runnable.setScheduleLog(scheduleLog);
@@ -126,21 +108,17 @@ public final class JobTemplate implements Runnable {
     }
 
     /**
-     * 单线程执行
+     * 同步执行
      */
-    private final void executeSingle() {
+    private void executeSynchronized(List<ScheduleLog> list) {
         LOGGER.debug("excuteSingleJob start");
         try {
-            List<ScheduleLog> processList = obtainTaskList();
-            if(null == processList || processList.isEmpty()) {
-                LOGGER.debug("#### scan[{}],no record ####", scanTypeName);
-                return;
-            }
             List<ScheduleLog> errorList = new ArrayList<>(); // 用来保存生成文件时失败的数据
             List<ScheduleLog> successList = new ArrayList<>(); // 保持成功生成的数据
             List<Long> nextTaskList = new ArrayList<>(); // 保持下一个处理
             String serviceName; // 任务处理类名称
-            for (ScheduleLog scheduleLog : processList) {
+            for (ScheduleLog scheduleLog : list) {
+                scheduleLog.setLastModifiedBy(lastModifiedBy);
                 JobExecuteHandler jobExecuteHandler = null;
                 serviceName = scheduleLog.getJobService();
                 Long id = scheduleLog.getId();
@@ -193,18 +171,10 @@ public final class JobTemplate implements Runnable {
         }
     }
 
+
     /**
-     * 获取任务执行列表
+     * 获取执行记录
      * @return
      */
-    private List<ScheduleLog> obtainTaskList(){
-        // 生成批次号,具体规则待定...
-        String processNo = scanTypeName + "_" + SnowFlakeUtil.getSnowFlake().nextId();
-        // 更新批次号、任务运行时间、和任务状态
-        int count = this.scheduleLogWrapper.updateProcessNo(processNo, scanTypeName, taskLoopCount);
-        LOGGER.debug("update count: {}", count);
-        // 重新根据批次号获取实际待处理的数据
-        List<ScheduleLog> processList = this.scheduleLogWrapper.findByProcessNo(processNo);
-        return processList;
-    }
+    protected abstract List<ScheduleLog> onBefore();
 }

@@ -11,10 +11,23 @@
 	<task:scheduler id="taskScheduler" pool-size="${hx.schedule.scheduler.pool.size}"/>
 	<task:annotation-driven executor="defaultExecutor" scheduler="taskScheduler"/>
 
+	<!-- 异步任务线程操作配置 -->
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="${hx.schedule.task.core.pool.size}" />  <!-- 线程池维护线程的最少数量 -->
+		<property name="keepAliveSeconds" value="${hx.schedule.task.keep.alive.seconds}" />  <!-- 保持活跃的秒数 -->
+		<property name="maxPoolSize" value="${hx.schedule.task.max.pool.size}" />  <!-- 最大线程池大小 -->
+		<property name="queueCapacity" value="${hx.schedule.task.queue.capacity}" />  <!-- 等待队列大小 -->
+	</bean>
+
 	<bean id="scheduleScanConfig" class="org.layz.hx.config.schedule.ScheduleScanConfig"/>
+	<bean id="scheduleCronConfig" class="org.layz.hx.config.schedule.ScheduleCronConfig"/>
 
 	<bean id="scheduleLogService" class="org.layz.hx.config.service.schedule.ScheduleLogServiceImpl"/>
 	<bean id="scheduleLogDao" class="org.layz.hx.config.persist.dao.schedule.ScheduleLogDaoImpl"/>
+
 	<bean id="scheduleScanService" class="org.layz.hx.config.service.schedule.ScheduleScanServiceImpl"/>
 	<bean id="scheduleScanDao" class="org.layz.hx.config.persist.dao.schedule.ScheduleScanDaoImpl"/>
+
+	<bean id="scheduleCronService" class="org.layz.hx.config.service.schedule.ScheduleCronServiceImpl"/>
+	<bean id="scheduleCronDao" class="org.layz.hx.config.persist.dao.schedule.ScheduleCronDaoImpl"/>
 </beans>

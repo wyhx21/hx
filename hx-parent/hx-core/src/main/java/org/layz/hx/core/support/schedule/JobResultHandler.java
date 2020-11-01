@@ -1,4 +1,4 @@
-package org.layz.hx.core.service;
+package org.layz.hx.core.support.schedule;
 
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.pojo.response.JsonResponse;
@@ -14,7 +14,7 @@ public interface JobResultHandler {
      * @param scheduleLog
      * @param result
      */
-    void jobFailHandle(ScheduleLog scheduleLog,Object result);
+    void jobFailHandle(ScheduleLog scheduleLog, Object result);
 
     /**
      *

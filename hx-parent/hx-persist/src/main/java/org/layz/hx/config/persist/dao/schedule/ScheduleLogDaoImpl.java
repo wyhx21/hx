@@ -20,15 +20,6 @@ public class ScheduleLogDaoImpl extends BaseDaoImpl<ScheduleLog> implements Sche
     private Integer failCount;
 
     @Override
-    public int findCountByName(String scanTypeName, Date currentDate) {
-        LOGGER.debug("scanTypeName:{}", scanTypeName);
-        String sql = "select count(0) from " + tableName + " where scanTypeName = ? and (`status` = ? or (`status` = ? and failCount < ?)) and beginRunTime <= ?";
-        int count = jdbcTemplate.queryForObject(sql, Integer.class, scanTypeName, ScheduleStatusEnum.WAITE_HANDLE.getValue(),
-                ScheduleStatusEnum.HANDLE_FAIL.getValue(), failCount,currentDate);
-        return count;
-    }
-
-    @Override
     public int updateProcessNo(String processNo, String scanTypeName, Integer taskLoopCount, Date currentDate) {
         LOGGER.debug("scanTypeName: {},taskLoopCount: {},processNo: {}", scanTypeName, taskLoopCount, processNo);
         String sql = "update " + tableName + " set processNo = ?,`status` = ?,lastModifiedDate = ? where scanTypeName = ? and (`status` = ? or (`status` = ? and failCount < ?)) and beginRunTime <= ? LIMIT ?";

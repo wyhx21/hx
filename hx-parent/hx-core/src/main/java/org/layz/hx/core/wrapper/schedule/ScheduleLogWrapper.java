@@ -6,17 +6,9 @@ import java.util.List;
 
 public interface ScheduleLogWrapper {
     /**
-     * 1: 扫描类为 scanTypeName
-     * 2：开始执行时间小于当前时间
-     * 3：执行状态为 ScheduleStatusEnum.WAITE_HANDLE
-     *    or ScheduleStatusEnum.HANDLE_FAIL and failCount <= 5
-     * @param scanTypeName
-     * @return
-     */
-    int findCountByName(String scanTypeName);
-
-    /**
      * 更新批次号
+     * ScheduleStatusEnum.WAITE_HANDLE
+     *    or ScheduleStatusEnum.HANDLE_FAIL and failCount <= 5
      * @param processNo
      * @param scanTypeName
      * @param taskLoopCount
@@ -47,4 +39,17 @@ public interface ScheduleLogWrapper {
      * @param list
      */
     void updateBatch(List<ScheduleLog> list);
+
+    /**
+     * 保存记录
+     * @param list
+     */
+    void persistBatch(List<ScheduleLog> list);
+
+    /**
+     * 批量保存记录
+     * @param scheduleLog
+     * @return
+     */
+    Integer persistEntity(ScheduleLog scheduleLog);
 }

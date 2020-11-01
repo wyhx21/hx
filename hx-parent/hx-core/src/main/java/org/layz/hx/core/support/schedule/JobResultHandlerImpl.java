@@ -1,4 +1,4 @@
-package org.layz.hx.core.service;
+package org.layz.hx.core.support.schedule;
 
 import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
@@ -37,12 +37,12 @@ public class JobResultHandlerImpl implements JobResultHandler {
     private String obtainMsg(Object obj){
         String msg = null;
         if(obj instanceof JsonResponse) {
-            msg = MessageFormat.format("code:{0},msg: {1}", ((JsonResponse)obj).getRespCode(), ((JsonResponse)obj).getRespMsg());
+            msg = MessageFormat.format("code:{0},msg:{1}", ((JsonResponse)obj).getRespCode(), ((JsonResponse)obj).getRespMsg());
         } else if (obj instanceof Throwable){
-            msg = ((Throwable)obj).getMessage();
+            msg = MessageFormat.format("errorClass:{0},msg:{1}",obj.getClass().getName(),((Throwable)obj).getMessage());
         }
         if(null == msg) {
-            return null;
+            return "result object is null";
         }
         if (msg != null && msg.length() >= 3500) {
             msg = msg.substring(0, 3500);
