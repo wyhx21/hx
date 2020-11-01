@@ -1,11 +1,9 @@
-package org.layz.hx.core.inte;
+package org.layz.hx.core.wrapper.system;
 
 import org.layz.hx.base.inte.BaseLoginInfo;
 import org.layz.hx.core.support.RequestContext;
 
-import java.io.Serializable;
-
-public interface RequestInfo extends Serializable {
+public interface RequestWrapper {
     /**
      * 获取新的 token
      * @return

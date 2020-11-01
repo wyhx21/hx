@@ -3,11 +3,11 @@ package org.layz.hx.config.schedule;
 import org.layz.hx.base.inte.ResponseEnum;
 import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
-import org.layz.hx.config.service.schedule.ScheduleLogService;
 import org.layz.hx.core.pojo.response.JsonResponse;
 import org.layz.hx.core.service.JobExecuteHandler;
 import org.layz.hx.core.service.JobResultHandler;
 import org.layz.hx.core.util.SnowFlakeUtil;
+import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.layz.hx.spring.util.SpringContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ import java.util.List;
 public final class JobTemplate implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobTemplate.class);
     private static Integer SINGLE = 0;
-    private ScheduleLogService scheduleLogService;
+    private ScheduleLogWrapper scheduleLogWrapper;
     private ThreadPoolTaskExecutor taskExecutor;
     private JobResultHandler jobResultHandler;
     /**
@@ -37,8 +37,8 @@ public final class JobTemplate implements Runnable {
      */
     private String scanTypeName;
 
-    public void setScheduleLogService(ScheduleLogService scheduleLogService) {
-        this.scheduleLogService = scheduleLogService;
+    public void setScheduleLogWrapper(ScheduleLogWrapper scheduleLogWrapper) {
+        this.scheduleLogWrapper = scheduleLogWrapper;
     }
 
     public void setTaskExecutor(ThreadPoolTaskExecutor taskExecutor) {
@@ -75,7 +75,7 @@ public final class JobTemplate implements Runnable {
 
     protected void execute(){
         // 扫描系统任务表中是否存在待处理类型的任务数据
-        int dataCount = scheduleLogService.findCountByName(scanTypeName);
+        int dataCount = this.scheduleLogWrapper.findCountByName(scanTypeName);
         LOGGER.debug("dataCount: {}", dataCount);
         if (0 == dataCount) {
             LOGGER.debug("#### scan[{}],no record ####", scanTypeName);
@@ -101,7 +101,7 @@ public final class JobTemplate implements Runnable {
             }
             for (ScheduleLog scheduleLog : processList) {
                 JobRunnable runnable = new JobRunnable();
-                runnable.setScheduleLogService(scheduleLogService);
+                runnable.setScheduleLogWrapper(this.scheduleLogWrapper);
                 runnable.setScheduleLog(scheduleLog);
                 runnable.setJobResultHandler(jobResultHandler);
                 if(null == taskExecutor) {
@@ -114,7 +114,7 @@ public final class JobTemplate implements Runnable {
                     scheduleLog.setStatus(ScheduleStatusEnum.WAITE_HANDLE.getValue());
                     scheduleLog.setLastModifiedDate(new Date());
                     scheduleLog.setLastModifiedDate(new Date());
-                    scheduleLogService.updateBatch(Collections.singletonList(scheduleLog));
+                    this.scheduleLogWrapper.updateBatch(Collections.singletonList(scheduleLog));
                     continue;
                 } else {
                     taskExecutor.execute(runnable);
@@ -179,14 +179,14 @@ public final class JobTemplate implements Runnable {
             }
             // 如果批次数据中存在处理异常的数据
             if (null != errorList && !errorList.isEmpty()) {
-                scheduleLogService.updateBatch(errorList);
+                this.scheduleLogWrapper.updateBatch(errorList);
             }
             // 处理成功的数据
             if (null != successList && !successList.isEmpty()) {
-                scheduleLogService.updateBatch(successList);
+                this.scheduleLogWrapper.updateBatch(successList);
             }
             if(null != nextTaskList && !nextTaskList.isEmpty()) {
-                scheduleLogService.updateNextJob(nextTaskList);
+                this.scheduleLogWrapper.updateNextJob(nextTaskList);
             }
         } catch (Throwable e) {
             LOGGER.error("#### systemTask handle error [{}] ####", scanTypeName, e);
@@ -201,10 +201,10 @@ public final class JobTemplate implements Runnable {
         // 生成批次号,具体规则待定...
         String processNo = scanTypeName + "_" + SnowFlakeUtil.getSnowFlake().nextId();
         // 更新批次号、任务运行时间、和任务状态
-        int count = scheduleLogService.updateProcessNo(processNo, scanTypeName, taskLoopCount);
+        int count = this.scheduleLogWrapper.updateProcessNo(processNo, scanTypeName, taskLoopCount);
         LOGGER.debug("update count: {}", count);
         // 重新根据批次号获取实际待处理的数据
-        List<ScheduleLog> processList = scheduleLogService.findByProcessNo(processNo);
+        List<ScheduleLog> processList = this.scheduleLogWrapper.findByProcessNo(processNo);
         return processList;
     }
 }

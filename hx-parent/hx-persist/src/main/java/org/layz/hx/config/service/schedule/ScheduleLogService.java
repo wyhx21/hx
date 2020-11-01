@@ -1,38 +1,24 @@
 package org.layz.hx.config.service.schedule;
 
 import org.layz.hx.config.entity.schedule.ScheduleLog;
+import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.layz.hx.persist.service.BaseService;
 
 import java.util.List;
 
-public interface ScheduleLogService extends BaseService<ScheduleLog> {
+public interface ScheduleLogService extends BaseService<ScheduleLog>, ScheduleLogWrapper {
     /**
-     * 1: 扫描类为 scanTypeName
-     * 2：开始执行时间小于当前时间
-     * 3：执行状态为 JobStatusEnum.WAITE_HANDLE
-     *    or JobStatusEnum.HANDLE_FAIL and failCount <= 5
-     * @param scanTypeName
+     * 更新
+     * @param scheduleLog
      * @return
      */
-    int findCountByName(String scanTypeName);
+    @Override
+    Integer update(ScheduleLog scheduleLog);
 
     /**
-     * 更新批次号
-     * @param processNo
-     * @param scanTypeName
-     * @param taskLoopCount
+     * 批量更新
+     * @param list
      */
-    int updateProcessNo(String processNo, String scanTypeName, Integer taskLoopCount);
-
-    /**
-     * 更新下一个批次号
-     * @param nextJobList
-     */
-    void updateNextJob(List<Long> nextJobList);
-    /**
-     * 查询定时任务执行的记录
-     * @param processNo
-     * @return
-     */
-    List<ScheduleLog> findByProcessNo(String processNo);
+    @Override
+    void updateBatch(List<ScheduleLog> list);
 }

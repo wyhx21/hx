@@ -2,10 +2,10 @@ package org.layz.hx.config.schedule;
 
 import org.layz.hx.base.inte.ResponseEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
-import org.layz.hx.config.service.schedule.ScheduleLogService;
 import org.layz.hx.core.pojo.response.JsonResponse;
 import org.layz.hx.core.service.JobExecuteHandler;
 import org.layz.hx.core.service.JobResultHandler;
+import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.layz.hx.spring.util.SpringContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +15,7 @@ import java.util.Date;
 
 public class JobRunnable implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(JobRunnable.class);
-    private ScheduleLogService scheduleLogService;
+    private ScheduleLogWrapper scheduleLogWrapper;
     private ScheduleLog scheduleLog;
     private JobResultHandler jobResultHandler;
 
@@ -36,23 +36,23 @@ public class JobRunnable implements Runnable {
             LOGGER.info("{} execute end, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin));
             if (ResponseEnum.SUCC.equals(response.getSuccess())) {
                 jobResultHandler.jobSuccHandle(scheduleLog, response);
-                scheduleLogService.update(scheduleLog);
+                this.scheduleLogWrapper.update(scheduleLog);
             } else {
                 jobResultHandler.jobFailHandle(scheduleLog,response);
-                scheduleLogService.update(scheduleLog);
+                this.scheduleLogWrapper.update(scheduleLog);
             }
-            scheduleLogService.updateNextJob(Collections.singletonList(scheduleLog.getId()));
+            this.scheduleLogWrapper.updateNextJob(Collections.singletonList(scheduleLog.getId()));
         } catch (Exception e) {
             LOGGER.error("{} execute error, id:{}, time: {} ms...", serviceName, id, (System.currentTimeMillis() - begin), e);
             jobResultHandler.jobErrorHandle(scheduleLog,e);
-            scheduleLogService.update(scheduleLog);
+            this.scheduleLogWrapper.update(scheduleLog);
         } finally {
             jobExecuteHandler.onAfter();
         }
     }
 
-    public void setScheduleLogService(ScheduleLogService scheduleLogService) {
-        this.scheduleLogService = scheduleLogService;
+    public void setScheduleLogWrapper(ScheduleLogWrapper scheduleLogWrapper) {
+        this.scheduleLogWrapper = scheduleLogWrapper;
     }
 
     public void setScheduleLog(ScheduleLog scheduleLog) {

@@ -2,8 +2,8 @@ package org.layz.hx.core.util.requestInfo;
 
 import org.layz.hx.base.inte.BaseLoginInfo;
 import org.layz.hx.base.util.StringUtil;
-import org.layz.hx.core.inte.RequestInfo;
 import org.layz.hx.core.support.RequestContext;
+import org.layz.hx.core.wrapper.system.RequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class MemoCacheRequest implements RequestInfo {
+public class MemoCacheRequest implements RequestWrapper {
     private static final Logger LOGGER = LoggerFactory.getLogger(MemoCacheRequest.class);
     private Long timeOut;
     /**

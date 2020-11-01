@@ -2,9 +2,9 @@ package org.layz.hx.config.schedule;
 
 import org.layz.hx.base.type.DeletedEnum;
 import org.layz.hx.config.entity.schedule.ScheduleScan;
-import org.layz.hx.config.service.schedule.ScheduleLogService;
 import org.layz.hx.config.service.schedule.ScheduleScanService;
 import org.layz.hx.core.service.JobResultHandlerImpl;
+import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.List;
 public final class ScheduleScanConfig implements SchedulingConfigurer {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleScanConfig.class);
     @Autowired
-    private ScheduleLogService scheduleLogService;
+    private ScheduleLogWrapper scheduleLogWrapper;
     @Autowired
     private ScheduleScanService scheduleScanService;
     @Autowired(required = false)
@@ -61,7 +61,7 @@ public final class ScheduleScanConfig implements SchedulingConfigurer {
         String remark = scan.getRemark();
         Integer single = scan.getSingle();
         JobTemplate template = new JobTemplate();
-        template.setScheduleLogService(this.scheduleLogService);
+        template.setScheduleLogWrapper(this.scheduleLogWrapper);
         template.setTaskExecutor(this.taskExecutor);
         template.setJobResultHandler(new JobResultHandlerImpl());
         template.setScanTypeName(scanTypeName);

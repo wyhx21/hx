@@ -1,8 +1,8 @@
 package org.layz.hx.core.util;
 
 import org.layz.hx.base.inte.BaseLoginInfo;
-import org.layz.hx.core.inte.RequestInfo;
 import org.layz.hx.core.support.RequestContext;
+import org.layz.hx.core.wrapper.system.RequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public class RequestUtil {
     // 当前状态
     private static ThreadLocal<RequestContext> threadLocal = new ThreadLocal<>();
 
-    private RequestInfo requestInfo;
+    private RequestWrapper requestWrapper;
 
     private static RequestUtil instance = new RequestUtil();
 
@@ -53,7 +53,7 @@ public class RequestUtil {
      * @param token
      */
     public void setToken(String token){
-        RequestContext context = requestInfo.getContextByToken(token);
+        RequestContext context = requestWrapper.getContextByToken(token);
         if(null == context) {
             LOGGER.info("context is null, token: {}", token);
             remove();
@@ -69,16 +69,16 @@ public class RequestUtil {
     public String login(BaseLoginInfo loginInfo){
         String sessionKey = loginInfo.getKey();
         // 如果已经存在，删除原有的
-        String oldToken = requestInfo.getToken(sessionKey);
+        String oldToken = requestWrapper.getToken(sessionKey);
         if(null != oldToken) {
-            requestInfo.removeByToken(oldToken);
+            requestWrapper.removeByToken(oldToken);
         }
-        String token = requestInfo.getToken();
+        String token = requestWrapper.getToken();
         RequestContext context = new RequestContext();
         context.setKey(sessionKey);
         context.setSessionTime();
         context.setLoginInfo(loginInfo);
-        requestInfo.setData(token,context);
+        requestWrapper.setData(token,context);
         threadLocal.set(context);
         return token;
     }
@@ -94,7 +94,7 @@ public class RequestUtil {
             return;
         }
         context.getCacheMap().put(key,value);
-        requestInfo.setCache(context.getKey(), key, value);
+        requestWrapper.setCache(context.getKey(), key, value);
     }
     /**
      * 更新登录信息
@@ -107,7 +107,7 @@ public class RequestUtil {
             return;
         }
         context.setLoginInfo(loginInfo);
-        requestInfo.setLoginInfo(context.getKey(), loginInfo);
+        requestWrapper.setLoginInfo(context.getKey(), loginInfo);
     }
     /*****************************************************************************************/
 
@@ -121,7 +121,7 @@ public class RequestUtil {
             return;
         }
         context.getCacheMap().remove(key);
-        requestInfo.removeCache(context.getKey(), key);
+        requestWrapper.removeCache(context.getKey(), key);
     }
 
     /**
@@ -133,7 +133,7 @@ public class RequestUtil {
             LOGGER.info("context is null");
             return;
         }
-        requestInfo.removeByKey(context.getKey());
+        requestWrapper.removeByKey(context.getKey());
         remove();
     }
 
@@ -142,7 +142,7 @@ public class RequestUtil {
      * @param baseLoginInfo
      */
     public void tickOut(BaseLoginInfo baseLoginInfo){
-        requestInfo.tickOut(baseLoginInfo);
+        requestWrapper.tickOut(baseLoginInfo);
     }
     /*****************************************************************************************/
     /**
@@ -152,7 +152,7 @@ public class RequestUtil {
         threadLocal.remove();
     }
 
-    public void setRequestInfo(RequestInfo requestInfo) {
-        this.requestInfo = requestInfo;
+    public void setRequestWrapper(RequestWrapper requestWrapper) {
+        this.requestWrapper = requestWrapper;
     }
 }
