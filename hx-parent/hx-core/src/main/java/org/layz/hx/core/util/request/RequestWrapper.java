@@ -6,13 +6,13 @@ import org.layz.hx.core.support.RequestContext;
 public class RequestWrapper implements org.layz.hx.core.wrapper.system.RequestWrapper {
     public static final RequestWrapper instance = new RequestWrapper();
     private Long timeOut;
-    private RequestWrapper requestWrapper;
+    private org.layz.hx.core.wrapper.system.RequestWrapper requestWrapper;
 
     public static RequestWrapper getInstance() {
         return instance;
     }
 
-    public void setRequestWrapper(RequestWrapper requestWrapper) {
+    public void setRequestWrapper(org.layz.hx.core.wrapper.system.RequestWrapper requestWrapper) {
         requestWrapper.setTimeOut(this.timeOut);
         this.requestWrapper = requestWrapper;
     }
