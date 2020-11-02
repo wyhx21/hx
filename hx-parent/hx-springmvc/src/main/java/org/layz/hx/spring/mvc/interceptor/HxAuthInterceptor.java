@@ -22,6 +22,9 @@ import java.util.List;
 
 public class HxAuthInterceptor implements HandlerInterceptor {
     private static final Logger LOGGER = LoggerFactory.getLogger(HxAuthInterceptor.class);
+    private static final String NONE = "";
+    private static final String ONE = "/";
+    private static final String TWO = "//";
     @Value("${permissionGroup:}")
     private String permissionGroup;
     private AuthWrapper authWrapper;
@@ -52,7 +55,7 @@ public class HxAuthInterceptor implements HandlerInterceptor {
         validPermissionGroup(permission.group());
         String contextPath = request.getContextPath();
         String requestURI = request.getRequestURI();
-        String url = requestURI.replace(contextPath,"");
+        String url = requestURI.replace(contextPath,NONE).replaceAll(TWO,ONE);
         List<String> authUrl = authWrapper.authUrl();
         Assert.isNotEmpty(authUrl, HxResponseEnum.NOT_AUTH_ERROR);
         for (String auth : authUrl) {

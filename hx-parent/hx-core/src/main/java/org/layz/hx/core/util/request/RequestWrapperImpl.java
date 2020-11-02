@@ -2,17 +2,18 @@ package org.layz.hx.core.util.request;
 
 import org.layz.hx.base.inte.BaseLoginInfo;
 import org.layz.hx.core.support.RequestContext;
+import org.layz.hx.core.wrapper.system.RequestWrapper;
 
-public class RequestWrapper implements org.layz.hx.core.wrapper.system.RequestWrapper {
-    public static final RequestWrapper instance = new RequestWrapper();
+public class RequestWrapperImpl implements RequestWrapper {
+    public static final RequestWrapperImpl instance = new RequestWrapperImpl();
     private Long timeOut;
     private org.layz.hx.core.wrapper.system.RequestWrapper requestWrapper;
 
-    public static RequestWrapper getInstance() {
+    public static RequestWrapperImpl getInstance() {
         return instance;
     }
 
-    public void setRequestWrapper(org.layz.hx.core.wrapper.system.RequestWrapper requestWrapper) {
+    public void setRequestWrapper(RequestWrapper requestWrapper) {
         requestWrapper.setTimeOut(this.timeOut);
         this.requestWrapper = requestWrapper;
     }

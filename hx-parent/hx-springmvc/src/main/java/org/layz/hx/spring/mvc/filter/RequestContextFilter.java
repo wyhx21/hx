@@ -31,7 +31,7 @@ public class RequestContextFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         if(request instanceof HttpServletRequest) {
-            String token = ((HttpServletRequest) request).getHeader(authToken);
+            String token = getToken((HttpServletRequest) request);
             RequestUtil.getInstance().setToken(token);
             try {
                 chain.doFilter(request, response);
@@ -41,5 +41,13 @@ public class RequestContextFilter implements Filter {
         } else {
             chain.doFilter(request, response);
         }
+    }
+
+    private String getToken(HttpServletRequest request){
+        String token = request.getHeader(authToken);
+        if(null == token) {
+            token = request.getParameter(authToken);
+        }
+        return token;
     }
 }
