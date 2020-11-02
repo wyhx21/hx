@@ -26,7 +26,7 @@ public class ScheduleLog extends AutoLongBaseEntity {
     private Date startRunTime;
     @HxColumn(sort = 9,definition = "datetime COMMENT '运行结束时间'")
     private Date endRunTime;
-    @HxColumn(sort = 10,definition = "varchar(2048) COMMENT '执行结果'")
+    @HxColumn(sort = 10,definition = "varchar(4010) COMMENT '执行结果'")
     private String handleResult;
     @HxColumn(sort = 11,definition = "varchar(64) COMMENT '参数1'")
     private String param1;

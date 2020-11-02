@@ -1,6 +1,6 @@
 package org.layz.hx.core.support.schedule;
 
-public abstract class AbstraceJobExecuteHandler implements JobExecuteHandler {
+public abstract class AbstractJobExecuteHandler implements JobExecuteHandler {
     @Override
     public void onBefore() {
 

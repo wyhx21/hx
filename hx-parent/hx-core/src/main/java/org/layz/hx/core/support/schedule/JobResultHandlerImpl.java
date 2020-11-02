@@ -44,8 +44,8 @@ public class JobResultHandlerImpl implements JobResultHandler {
         if(null == msg) {
             return "result object is null";
         }
-        if (msg != null && msg.length() >= 3500) {
-            msg = msg.substring(0, 3500);
+        if (msg != null && msg.length() >= 4000) {
+            msg = msg.substring(0, 4000);
         }
         return msg;
     }
