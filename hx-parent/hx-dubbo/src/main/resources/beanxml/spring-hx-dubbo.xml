@@ -26,6 +26,8 @@
 					group="${hx.dubbo.provider.group}"
 					version="${hx.dubbo.provider.version}"/>
 
-	<dubbo:consumer retries="${hx.dubbo.consumer.retries}"/>
+	<dubbo:consumer retries="${hx.dubbo.consumer.retries}"
+					group="${hx.dubbo.consumer.group}"
+					version="${hx.dubbo.consumer.version}"/>
 
 </beans>
