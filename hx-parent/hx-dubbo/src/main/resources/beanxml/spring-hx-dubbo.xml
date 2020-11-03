@@ -24,7 +24,8 @@
 	<dubbo:provider filter="hxException,-exception"
 					retries="${hx.dubbo.provider.retries}"
 					group="${hx.dubbo.provider.group}"
-					version="${hx.dubbo.provider.version}"/>
+					version="${hx.dubbo.provider.version}"
+					token="true"/>
 
 	<dubbo:consumer retries="${hx.dubbo.consumer.retries}"
 					group="${hx.dubbo.consumer.group}"
