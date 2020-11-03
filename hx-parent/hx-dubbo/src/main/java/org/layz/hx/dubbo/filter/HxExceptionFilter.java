@@ -1,7 +1,5 @@
 package org.layz.hx.dubbo.filter;
 
-import org.apache.dubbo.common.constants.CommonConstants;
-import org.apache.dubbo.common.extension.Activate;
 import org.apache.dubbo.common.utils.ReflectUtils;
 import org.apache.dubbo.common.utils.StringUtils;
 import org.apache.dubbo.rpc.*;
@@ -12,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
-@Activate(group = CommonConstants.PROVIDER)
 public class HxExceptionFilter implements Filter, Filter.Listener {
     private Logger logger = LoggerFactory.getLogger(HxExceptionFilter.class);
 
