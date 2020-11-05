@@ -5,13 +5,10 @@ import org.layz.hx.core.pojo.response.JsonResponse;
 import org.layz.hx.core.support.schedule.AbstractJobExecuteHandler;
 import org.layz.hx.core.util.ResponseUtil;
 import org.layz.hx.spring.util.SpringContextUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 
 public class MethodInvokeJob extends AbstractJobExecuteHandler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MethodInvokeJob.class);
     private static final String split = "\\.";
     @Override
     public JsonResponse doTask(String param1, String param2) throws Exception {
