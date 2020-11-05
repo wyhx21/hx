@@ -1,6 +1,7 @@
 package org.layz.hx.config.schedule.run;
 
 import org.layz.hx.base.inte.ResponseEnum;
+import org.layz.hx.base.type.DeletedEnum;
 import org.layz.hx.base.type.ScheduleStatusEnum;
 import org.layz.hx.config.entity.schedule.ScheduleLog;
 import org.layz.hx.core.pojo.response.JsonResponse;
@@ -10,21 +11,26 @@ import org.layz.hx.core.wrapper.schedule.ScheduleLogWrapper;
 import org.layz.hx.spring.util.SpringContextUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.TriggerContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.support.CronTrigger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-public abstract class ScheduleJobTemplate implements Runnable{
+public abstract class ScheduleJobTemplate implements Runnable, Trigger {
     private static final Logger LOGGER = LoggerFactory.getLogger(ScheduleJobTemplate.class);
-    private static Integer SINGLE = 0;
+    private static Integer SINGLE = 1;
     private ThreadPoolTaskExecutor taskExecutor;
     private JobResultHandler jobResultHandler;
     private Integer singleThread = 0;
     protected ScheduleLogWrapper scheduleLogWrapper;
     protected Long lastModifiedBy;
+    private Trigger trigger;
+    private Integer deleted;
     /**
      * 扫描类
      */
@@ -54,8 +60,19 @@ public abstract class ScheduleJobTemplate implements Runnable{
         this.lastModifiedBy = lastModifiedBy;
     }
 
+    public void setCron(String cron){
+        this.trigger = new CronTrigger(cron);
+    }
+
+    public void setDeleted(Integer deleted) {
+        this.deleted = deleted;
+    }
+
     @Override
     public final void run() {
+        if(!DeletedEnum.ENABLE.equalValue(this.deleted)) {
+            return;
+        }
         long begin = System.currentTimeMillis();
         try {
             LOGGER.debug("task execute begin...");
@@ -72,6 +89,11 @@ public abstract class ScheduleJobTemplate implements Runnable{
         } catch (Exception e) {
             LOGGER.error("task execute error, execute time: {}...",(System.currentTimeMillis() - begin), e);
         }
+    }
+
+    @Override
+    public Date nextExecutionTime(TriggerContext triggerContext) {
+        return this.trigger.nextExecutionTime(triggerContext);
     }
 
     /**
