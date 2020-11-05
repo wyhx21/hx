@@ -23,6 +23,7 @@
 	<bean id="scheduleCronConfig" class="org.layz.hx.config.schedule.ScheduleCronConfig"/>
 
 	<bean id="refreshScheduleJob" class="org.layz.hx.config.schedule.job.RefreshScheduleJob"/>
+	<bean id="methodInvokeJob" class="org.layz.hx.config.schedule.job.MethodInvokeJob"/>
 
 	<bean id="scheduleLogService" class="org.layz.hx.config.service.schedule.ScheduleLogServiceImpl"/>
 	<bean id="scheduleLogDao" class="org.layz.hx.config.persist.dao.schedule.ScheduleLogDaoImpl"/>
