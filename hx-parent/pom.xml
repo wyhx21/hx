@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.layz.hx</groupId>
 	<artifactId>hx-parent</artifactId>
-	<version>1.1.0</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<modules>
 		<module>hx-core</module>
@@ -18,6 +18,7 @@
 	</modules>
 
 	<properties>
+		<hx.version>1.0.0</hx.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -29,7 +30,6 @@
 		<druid.version>1.1.20</druid.version>
 		<servlet.version>4.0.1</servlet.version>
 		<fastjson.version>1.2.62</fastjson.version>
-		<hx.version>1.1.0</hx.version>
 		<mybatis.version>3.5.4</mybatis.version>
 		<mybatis.spring.version>2.0.4</mybatis.spring.version>
 		<httpclient.version>4.5.9</httpclient.version>
@@ -306,6 +306,14 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>versions-maven-plugin</artifactId>
+				<version>2.8.1</version>
+				<configuration>
+					<newVersion>1.0.0</newVersion>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

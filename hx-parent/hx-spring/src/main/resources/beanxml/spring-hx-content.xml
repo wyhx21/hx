@@ -11,4 +11,5 @@
 	<import resource="classpath*:beanxml/spring-*-dubbo.xml"/>
 	<import resource="classpath*:beanxml/spring-*-package.xml"/>
 	<import resource="classpath*:beanxml/spring-*-bean.xml"/>
+	<import resource="classpath*:beanxml/spring-env-*.xml"/>
 </beans>
