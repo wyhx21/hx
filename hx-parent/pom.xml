@@ -32,7 +32,7 @@
 		<fastjson.version>1.2.62</fastjson.version>
 		<mybatis.version>3.5.4</mybatis.version>
 		<mybatis.spring.version>2.0.4</mybatis.spring.version>
-		<httpclient.version>4.5.9</httpclient.version>
+		<httpclient.version>4.5.13</httpclient.version>
 		<commons.lang3.version>3.9</commons.lang3.version>
 		<jackson.json.version>2.11.0</jackson.json.version>
 		<mysql.connection.version>8.0.18</mysql.connection.version>
