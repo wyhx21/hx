@@ -29,7 +29,7 @@
 		<logback.version>1.2.3</logback.version>
 		<druid.version>1.1.20</druid.version>
 		<servlet.version>4.0.1</servlet.version>
-		<fastjson.version>1.2.62</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 		<mybatis.version>3.5.4</mybatis.version>
 		<mybatis.spring.version>2.0.4</mybatis.spring.version>
 		<httpclient.version>4.5.9</httpclient.version>
